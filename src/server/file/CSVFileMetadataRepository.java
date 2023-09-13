@@ -10,6 +10,11 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
     }
 
     @Override
+    public FileDto findByName(String fileName) {
+        return null;
+    }
+
+    @Override
     public List<FileDto> findMany(int offset, int size) {
         return null;
     }
