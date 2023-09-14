@@ -1,4 +1,4 @@
-package server.user;
+package main.server.user;
 
 public interface UserRepository {
 

@@ -1,4 +1,4 @@
-package server.user;
+package main.server.user;
 
 public class CSVUserRepository implements UserRepository {
 

@@ -1,4 +1,4 @@
-package server.file;
+package main.server.file;
 
 public class FileDto {
 
