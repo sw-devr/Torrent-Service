@@ -11,6 +11,7 @@ public class FileDto {
     private int size;
     private long createdTimestamp;
     private int downloadCnt;
+    private FileState state;
 
 
 
@@ -84,5 +85,13 @@ public class FileDto {
 
     public void setDownloadCnt(int downloadCnt) {
         this.downloadCnt = downloadCnt;
+    }
+
+    public FileState getState() {
+        return state;
+    }
+
+    public void setState(FileState fileState) {
+        this.state = fileState;
     }
 }
