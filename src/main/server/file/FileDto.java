@@ -1,5 +1,7 @@
 package main.server.file;
 
+import java.util.Objects;
+
 public class FileDto {
 
     private long id;
@@ -93,5 +95,34 @@ public class FileDto {
 
     public void setState(FileState fileState) {
         this.state = fileState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FileDto)) return false;
+        FileDto fileDto = (FileDto) o;
+        return getId() == fileDto.getId() && getUserId() == fileDto.getUserId() && getPrice() == fileDto.getPrice() && getSize() == fileDto.getSize() && getCreatedTimestamp() == fileDto.getCreatedTimestamp() && getDownloadCnt() == fileDto.getDownloadCnt() && Objects.equals(getPath(), fileDto.getPath()) && Objects.equals(getSubject(), fileDto.getSubject()) && Objects.equals(getDescription(), fileDto.getDescription()) && getState() == fileDto.getState();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUserId(), getPrice(), getPath(), getSubject(), getDescription(), getSize(), getCreatedTimestamp(), getDownloadCnt(), getState());
+    }
+
+    @Override
+    public String toString() {
+        return "FileDto{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", price=" + price +
+                ", path='" + path + '\'' +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", size=" + size +
+                ", createdTimestamp=" + createdTimestamp +
+                ", downloadCnt=" + downloadCnt +
+                ", state=" + state +
+                '}';
     }
 }

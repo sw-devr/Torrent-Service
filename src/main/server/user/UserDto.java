@@ -1,5 +1,7 @@
 package main.server.user;
 
+import java.util.Objects;
+
 public class UserDto {
 
     private long id;
@@ -47,5 +49,29 @@ public class UserDto {
 
     public void setPoints(long points) {
         this.points = points;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserDto)) return false;
+        UserDto userDto = (UserDto) o;
+        return getId() == userDto.getId() && getPoints() == userDto.getPoints() && Objects.equals(getEmail(), userDto.getEmail()) && Objects.equals(getPassword(), userDto.getPassword()) && getRole() == userDto.getRole();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getEmail(), getPassword(), getRole(), getPoints());
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", points=" + points +
+                '}';
     }
 }
