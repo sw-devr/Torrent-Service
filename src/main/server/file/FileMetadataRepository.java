@@ -4,16 +4,22 @@ import java.util.List;
 
 public interface FileMetadataRepository {
 
-    FileDto findById(long id);
+    FileMetadata findById(long id);
 
-    FileDto findByName(String fileName);
+    FileMetadata findByPath(String filePath);
 
-    List<FileDto> findMany(int offset, int size);
+    List<FileMetadata> findBySubject(String fileName, int offset, int defaultPagingSize);
 
-    void save(FileDto fileMetadata);
+    List<FileMetadata> findByUserId(long userId, int offset, int defaultPagingSize);
 
-    void update(FileDto fileMetadata);
+    List<FileMetadata> findAll(int offset, int size);
+
+    void save(FileMetadata fileMetadata);
+
+    void update(FileMetadata fileMetadata);
 
     void delete(long id);
+
+    void deleteAll(List<Long> fileIds);
 
 }

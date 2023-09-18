@@ -2,7 +2,7 @@ package main.server.file;
 
 import java.util.Objects;
 
-public class FileDto {
+public class FileMetadata {
 
     private long id;
     private long userId;
@@ -15,7 +15,57 @@ public class FileDto {
     private int downloadCnt;
     private FileState state;
 
+    public static FileMetadata init(String subject, int price,
+                                    long userId, String filePath, int fileSize) {
 
+        return init(subject, "", price, userId, filePath, fileSize);
+    }
+
+    public static FileMetadata init(String subject, String description, int price,
+                                    long userId, String filePath, int fileSize) {
+
+        FileMetadata fileMetadata = new FileMetadata();
+        fileMetadata.setSubject(subject);
+        fileMetadata.setDescription(description);
+        fileMetadata.setPrice(price);
+        fileMetadata.setUserId(userId);
+        fileMetadata.setPath(filePath);
+        fileMetadata.setSize(fileSize);
+        fileMetadata.setState(FileState.READY);
+        fileMetadata.setCreatedTimestamp(System.currentTimeMillis());
+        fileMetadata.setDownloadCnt(0);
+
+        return fileMetadata;
+    }
+
+
+    public void update(String subject, String description, Integer price) {
+
+        if(subject != null) {
+            this.subject = subject;
+        }
+        if(description != null) {
+            this.description = description;
+        }
+        if(price != null) {
+            this.price = price;
+        }
+    }
+
+    public int increaseDownloadCnt() {
+        this.downloadCnt++;
+
+        return this.downloadCnt;
+    }
+
+    public FileState completeFileUpload() throws IllegalAccessException {
+        if(this.state != FileState.READY) {
+            throw new IllegalAccessException("이미 업로드 완료된 파일입니다.");
+        }
+        this.state = FileState.AVAILABLE;
+
+        return this.state;
+    }
 
     public long getId() {
         return id;
@@ -97,17 +147,18 @@ public class FileDto {
         this.state = fileState;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FileDto)) return false;
-        FileDto fileDto = (FileDto) o;
-        return getId() == fileDto.getId() && getUserId() == fileDto.getUserId() && getPrice() == fileDto.getPrice() && getSize() == fileDto.getSize() && getCreatedTimestamp() == fileDto.getCreatedTimestamp() && getDownloadCnt() == fileDto.getDownloadCnt() && Objects.equals(getPath(), fileDto.getPath()) && Objects.equals(getSubject(), fileDto.getSubject()) && Objects.equals(getDescription(), fileDto.getDescription()) && getState() == fileDto.getState();
+        if (!(o instanceof FileMetadata)) return false;
+        FileMetadata fileMetadata = (FileMetadata) o;
+        return getId() == fileMetadata.getId() && getUserId() == fileMetadata.getUserId() && getSize() == fileMetadata.getSize() && getCreatedTimestamp() == fileMetadata.getCreatedTimestamp() && Objects.equals(getPath(), fileMetadata.getPath());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUserId(), getPrice(), getPath(), getSubject(), getDescription(), getSize(), getCreatedTimestamp(), getDownloadCnt(), getState());
+        return Objects.hash(getId(), getUserId(), getPath(), getSize(), getCreatedTimestamp());
     }
 
     @Override
@@ -125,4 +176,5 @@ public class FileDto {
                 ", state=" + state +
                 '}';
     }
+
 }
