@@ -56,4 +56,15 @@ public class SocketRequest {
     public void setBody(Object body) {
         this.body = body;
     }
+
+    @Override
+    public String toString() {
+        return "SocketRequest{" +
+                "headerSize=" + headerSize +
+                ", bodySize=" + bodySize +
+                ", url='" + url + '\'' +
+                ", header=" + header +
+                ", body=" + body +
+                '}';
+    }
 }

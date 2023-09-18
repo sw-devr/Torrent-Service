@@ -21,6 +21,10 @@ public class UserService {
     public String login(RequestLoginDto request) {
 
         User user = userRepository.findByEmail(request.getEmail());
+
+        if(user == null) {
+            throw new IllegalArgumentException("올바르지 못한 회원 인증입니다.");
+        }
         if(!user.isCorrectPassword(request.getPassword())) {
             throw new IllegalArgumentException("올바르지 못한 회원 인증입니다.");
         }

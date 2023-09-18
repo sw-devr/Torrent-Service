@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static main.server.file.FileConstants.*;
+import static main.server.file.FileConstants.DEFAULT_FILE_STORE_PATH;
+import static main.server.file.FileConstants.DEFAULT_PAGING_SIZE;
 
 public class FileService {
 

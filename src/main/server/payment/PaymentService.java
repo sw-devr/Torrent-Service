@@ -3,7 +3,6 @@ package main.server.payment;
 import main.server.file.FileMetadata;
 import main.server.file.FileMetadataRepository;
 import main.server.file.FileService;
-import main.server.file.RequestCreateFileMetadataDto;
 import main.server.user.User;
 import main.server.user.UserRepository;
 import main.server.user.UserRole;

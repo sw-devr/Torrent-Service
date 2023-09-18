@@ -28,8 +28,10 @@ public class UserController {
 
             return createResponse(Status.SUCCESS.getCode(), request.getHeader(), "로그인 성공");
         } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
             return createResponse(Status.BAD_REQUEST.getCode(), request.getHeader(), e.getMessage());
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return createResponse(Status.INTERNAL_SERVER_ERROR.getCode(), request.getHeader(), e.getMessage());
         }
     }

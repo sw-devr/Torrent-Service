@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Map;
 
 import static main.protocol.ResponseFactory.createResponse;
@@ -66,7 +67,7 @@ public class SocketServerHandler implements Runnable {
         byte[] encryptedBodySize = CipherWorker.encrypt(decryptedBodySize);
 
         socketReader.read(encryptedBodySize);
-        int bodySize = ByteBuffer.wrap(CipherWorker.decrypt(encryptedHeaderSize)).getInt();
+        int bodySize = ByteBuffer.wrap(CipherWorker.decrypt(encryptedBodySize)).getInt();
         if(headerSize > MAX_ALLOWED_BODY_SIZE) {
             // 예외 처리
         }
@@ -76,7 +77,15 @@ public class SocketServerHandler implements Runnable {
         byte[] encryptedURL = CipherWorker.encrypt(decryptedURL);
 
         socketReader.read(encryptedURL);
-        String url = new String(CipherWorker.decrypt(encryptedURL));
+        decryptedURL = CipherWorker.decrypt(encryptedURL);
+        int idx = 0;
+        for(int i=0;i<decryptedURL.length;i++) {
+            if(decryptedURL[i] == 0) {
+                idx = i;
+                break;
+            }
+        }
+        String url = new String(Arrays.copyOf(decryptedURL, idx));
 
         //header
         byte[] decryptedHeader = new byte[headerSize];
