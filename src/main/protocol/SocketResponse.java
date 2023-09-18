@@ -4,6 +4,12 @@ import java.util.Map;
 
 public class SocketResponse {
 
+    public static final int STATUS_CODE_BYTE_SIZE = 4;
+    public static final int HEADER_BYTE_SIZE = 4;
+    public static final int BODY_BYTE_SIZE = 4;
+    public static final int MAX_ALLOWED_HEADER_SIZE = 1024;
+    public static final int MAX_ALLOWED_BODY_SIZE = 1024;
+
     private int headerSize;
     private int bodySize;
     private int statusCode;
