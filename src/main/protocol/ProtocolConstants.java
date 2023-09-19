@@ -4,6 +4,7 @@ public class ProtocolConstants {
 
     public static final String USER_LOGIN_URL = "/user/login";
     public static final String USER_LOGOUT_URL = "/user/logout";
+    public static final String USER_FIND_URL = "/user/find";
     public static final String USER_JOIN_URL = "/user/join";
     public static final String USER_DELETE_URL = "/user/delete";
     public static final String FILE_UPLOAD_URL = "/file/upload";

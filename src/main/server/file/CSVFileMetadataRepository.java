@@ -69,7 +69,7 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
             String line = br.readLine();
             while((line = br.readLine()) != null) {
                 FileMetadata fileMetadata = parseFileDto(line);
-                if(fileMetadata.getSubject().equals(fileSubject)) {
+                if(fileMetadata.getSubject().contains(fileSubject)) {
                     if(currentCnt < offset) {
                         currentCnt++;
                         continue;
@@ -308,7 +308,9 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
         StringBuilder description = new StringBuilder();
         for(int i=5;i<columns.length-4;i++) {
             description.append(columns[i]);
+            description.append(",");
         }
+        description.delete(description.length()-1, description.length());
 
         FileMetadata fileMetadata = new FileMetadata();
         fileMetadata.setId(Long.parseLong(columns[0]));

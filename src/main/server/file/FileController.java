@@ -13,6 +13,7 @@ import java.io.BufferedOutputStream;
 import java.util.List;
 
 import static main.protocol.ContentType.STREAM;
+import static main.protocol.ProtocolConstants.FILE_METADATA_FIND_ALL_URL;
 import static main.protocol.ResponseFactory.createResponse;
 import static main.protocol.SocketHeaderType.*;
 import static main.server.common.CommonConstants.FILE_SERVICE;
@@ -59,7 +60,8 @@ public class FileController {
             if(requestParam.getUserId() != userService.currentUserId(sessionId)) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
-            fileService.create(requestParam);
+            String uploadPath = fileService.create(requestParam);
+            request.getHeader().put(UPLOAD_PATH_URL.getValue(), uploadPath);
 
             return createResponse(Status.SUCCESS.getCode(), request.getHeader(), "파일 메타데이터 생성 성공");
         }
@@ -74,7 +76,7 @@ public class FileController {
         }
     }
 
-    @Mapping("/file/metadata/search/all")
+    @Mapping(FILE_METADATA_FIND_ALL_URL)
     public SocketResponse searchAll(SocketRequest request) {
 
         try{

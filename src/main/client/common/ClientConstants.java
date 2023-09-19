@@ -1,4 +1,4 @@
-package main.client;
+package main.client.common;
 
 public class ClientConstants {
 

@@ -57,4 +57,16 @@ public class RequestCreateFileMetadataDto {
     public void setSize(int size) {
         this.size = size;
     }
+
+    @Override
+    public String toString() {
+        return "RequestCreateFileMetadataDto{" +
+                "userId=" + userId +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", fileName='" + fileName + '\'' +
+                ", size=" + size +
+                '}';
+    }
 }

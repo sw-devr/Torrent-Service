@@ -49,6 +49,7 @@ public class UserService {
 
     public void join(RequestJoinDto request) {
 
+        System.out.println(request);
         if(userRepository.findByEmail(request.getEmail()) != null) {
             throw new IllegalArgumentException("이미 존재하는 email입니다.");
         }
@@ -68,5 +69,19 @@ public class UserService {
     public Long currentUserId(String sessionId) {
 
         return session.get(sessionId);
+    }
+
+    public ResponseUserDto find(String sessionId) {
+
+        long userId = session.get(sessionId);
+        User user =  userRepository.findById(userId);
+
+        ResponseUserDto response = new ResponseUserDto();
+        response.setUserId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setPoints(user.getPoints());
+        response.setRole(user.getRole());
+
+        return response;
     }
 }

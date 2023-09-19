@@ -1,10 +1,10 @@
-package main.client.user;
+package main.client.user.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.client.SocketClientHandler;
-import main.client.file.FileMainFrame;
+import main.client.common.SocketClientHandler;
+import main.client.user.StartPageFrame;
 import main.protocol.*;
-import main.server.user.RequestLoginDto;
+import main.server.user.RequestJoinDto;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,20 +13,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static main.protocol.ProtocolConstants.USER_LOGIN_URL;
+import static main.protocol.ProtocolConstants.USER_JOIN_URL;
 
-public class UserLoginListener implements ActionListener {
+public class UserJoinListener implements ActionListener {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JTextField emailTextField;
     private final JPasswordField passwordTextField;
-    private final JFrame userLoginFrame;
+    private final JFrame userJoinFrame;
 
-    public UserLoginListener(JTextField emailTextField, JPasswordField passwordTextField, JFrame userLoginFrame) {
+    public UserJoinListener(JTextField emailTextField, JPasswordField passwordTextField, JFrame userJoinFrame) {
 
         this.emailTextField = emailTextField;
         this.passwordTextField = passwordTextField;
-        this.userLoginFrame = userLoginFrame;
+        this.userJoinFrame = userJoinFrame;
     }
 
     @Override
@@ -39,25 +39,26 @@ public class UserLoginListener implements ActionListener {
             Map<String, String> header = new HashMap<>();
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
 
-            RequestLoginDto requestBody = new RequestLoginDto();
+            RequestJoinDto requestBody = new RequestJoinDto();
             requestBody.setEmail(emailTextField.getText());
             requestBody.setPassword(new String(passwordTextField.getPassword()));
 
             SocketRequest request = new SocketRequest();
-            request.setUrl(USER_LOGIN_URL);
+            request.setUrl(USER_JOIN_URL);
             request.setHeader(header);
             request.setBody(objectMapper.writeValueAsString(requestBody));
 
-            System.out.println(request);
             socketHandler.sendRequest(request);
             SocketResponse response = socketHandler.receiveResponse();
+            socketHandler.close();
 
             //후처리
             if(response.getStatusCode() == Status.SUCCESS.getCode()) {
-                String sessionId = response.getHeader().get(SocketHeaderType.SESSION_ID.getValue());
-                FileMainFrame mainFrame = new FileMainFrame(sessionId);
-                userLoginFrame.setVisible(false);
-            } else if(response.getStatusCode() == Status.BAD_REQUEST.getCode()) {
+                JOptionPane.showMessageDialog(null, response.getBody());
+
+                StartPageFrame startMainFrame = new StartPageFrame();
+                userJoinFrame.setVisible(false);
+            } else {
                 //로그인 시도 실패 메세지 콘솔 띄우기
                 JOptionPane.showMessageDialog(null, response.getBody());
             }

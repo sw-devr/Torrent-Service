@@ -41,12 +41,16 @@ public class FileService {
         fileMetadataRepository.update(fileMetadata);
     }
 
-    public void create(RequestCreateFileMetadataDto request) {
+    public String create(RequestCreateFileMetadataDto request) {
+
+        String savingFilePath = createPath(request.getFileName());
 
         FileMetadata fileMetadata = FileMetadata.init(request.getSubject(), request.getDescription(),
-                request.getPrice(), request.getUserId(), request.getFileName(), request.getSize());
+                request.getPrice(), request.getUserId(), savingFilePath, request.getSize());
 
         fileMetadataRepository.save(fileMetadata);
+
+        return savingFilePath;
     }
 
     public List<FileMetadata> findAll(int offset, int size) {

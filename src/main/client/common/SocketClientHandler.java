@@ -1,4 +1,4 @@
-package main.client;
+package main.client.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import main.protocol.ContentType;
@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static main.client.ClientConstants.SERVER_IP_ADDRESS;
-import static main.client.ClientConstants.SERVER_IP_PORT;
+import static main.client.common.ClientConstants.SERVER_IP_ADDRESS;
+import static main.client.common.ClientConstants.SERVER_IP_PORT;
 import static main.protocol.SocketHeaderType.CONTENT_TYPE;
 import static main.protocol.SocketResponse.*;
 
@@ -35,6 +35,7 @@ public class SocketClientHandler {
     }
 
     public void sendRequest(SocketRequest request) throws IOException {
+        System.out.println(request);
 
         byte[] decryptedURL = Arrays.copyOf(request.getUrl().getBytes(UTF_8), SocketRequest.URL_BYTE_SIZE);
         byte[] encryptedURL = CipherWorker.encrypt(decryptedURL);
@@ -42,7 +43,7 @@ public class SocketClientHandler {
         byte[] decryptedHeader = objectMapper.writeValueAsBytes(request.getHeader());
         byte[] encryptedHeader = CipherWorker.encrypt(decryptedHeader);
 
-        byte[] decryptedBody = ((String)request.getBody()).getBytes(UTF_8);
+        byte[] decryptedBody = request.getBody() == null ? new byte[0] : ((String)request.getBody()).getBytes(UTF_8);
         byte[] encryptedBody = CipherWorker.encrypt(decryptedBody);
 
         byte[] decryptedHeaderSize = ByteBuffer.allocate(HEADER_BYTE_SIZE).putInt(decryptedHeader.length).array();

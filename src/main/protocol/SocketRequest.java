@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class SocketRequest {
 
-    public static final int URL_BYTE_SIZE = 20;
+    public static final int URL_BYTE_SIZE = 50;
     public static final int HEADER_BYTE_SIZE = 4;
     public static final int BODY_BYTE_SIZE = 4;
     public static final int MAX_ALLOWED_HEADER_SIZE = 1024;

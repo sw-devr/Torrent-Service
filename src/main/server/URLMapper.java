@@ -35,6 +35,7 @@ public class URLMapper {
 
     public SocketResponse handle(SocketRequest request) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
 
+        System.out.println(request);
         Method mappedMethod = methodMapper.get(request.getUrl());
         if(mappedMethod == null) {
             throw new MalformedURLException("요청한 URL에 매핑되는 핸들러가 없습니다.");

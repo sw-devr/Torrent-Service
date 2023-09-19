@@ -5,6 +5,10 @@ public class RequestJoinDto {
     private String email;
     private String password;
 
+    public RequestJoinDto() {
+
+    }
+
     public String getEmail() {
         return email;
     }

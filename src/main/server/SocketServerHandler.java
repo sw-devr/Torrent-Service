@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class SocketServerHandler implements Runnable {
 
         socketReader.read(encryptedURL);
         decryptedURL = CipherWorker.decrypt(encryptedURL);
-        int idx = 0;
+        int idx = decryptedURL.length;
         for(int i=0;i<decryptedURL.length;i++) {
             if(decryptedURL[i] == 0) {
                 idx = i;
@@ -139,7 +140,7 @@ public class SocketServerHandler implements Runnable {
         byte[] decryptedHeader = objectMapper.writeValueAsBytes(socketResponse.getHeader());
         byte[] encryptedHeader = CipherWorker.encrypt(decryptedHeader);
 
-        byte[] decryptedBody = objectMapper.writeValueAsBytes(socketResponse.getBody());
+        byte[] decryptedBody = ((String)socketResponse.getBody()).getBytes(StandardCharsets.UTF_8);
         byte[] encryptedBody = CipherWorker.encrypt(decryptedBody);
 
         byte[] decryptedHeaderSize = ByteBuffer.allocate(HEADER_BYTE_SIZE).putInt(decryptedHeader.length).array();

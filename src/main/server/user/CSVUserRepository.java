@@ -13,11 +13,14 @@ public class CSVUserRepository implements UserRepository {
 
     private final Path csvFilePath;
     private final Path tempCsvFilePath;
+    private final Path idFilePath;
 
-    public CSVUserRepository(String path) {
+
+    public CSVUserRepository(String path, String idPath) {
 
         this.csvFilePath = Paths.get(path);
         tempCsvFilePath = Paths.get(CommonConstants.createTempFilePath(path));
+        idFilePath = Paths.get(idPath);
     }
 
     @Override
@@ -65,8 +68,25 @@ public class CSVUserRepository implements UserRepository {
     @Override
     public void save(User user) {
 
+        int id;
+        try(BufferedReader br = new BufferedReader(new FileReader(idFilePath.toFile()))) {
+            id = Integer.parseInt(br.readLine());
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
+        id++;
+        try(BufferedWriter br = new BufferedWriter(new FileWriter(idFilePath.toFile()))) {
+            br.write(Integer.toString(id));
+            br.flush();
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
+
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(csvFilePath.toFile(), true))) {
 
+            user.setId(id);
             String line = pasrseString(user);
 
             bw.newLine();
