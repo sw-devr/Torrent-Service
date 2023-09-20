@@ -19,6 +19,7 @@ import static main.client.common.ClientConstants.SERVER_IP_ADDRESS;
 import static main.client.common.ClientConstants.SERVER_IP_PORT;
 import static main.protocol.SocketHeaderType.CONTENT_TYPE;
 import static main.protocol.SocketResponse.*;
+import static main.server.common.CommonConstants.DEFAULT_BUFFER_SIZE;
 
 public class SocketClientHandler {
 
@@ -43,21 +44,51 @@ public class SocketClientHandler {
         byte[] decryptedHeader = objectMapper.writeValueAsBytes(request.getHeader());
         byte[] encryptedHeader = CipherWorker.encrypt(decryptedHeader);
 
-        byte[] decryptedBody = request.getBody() == null ? new byte[0] : ((String)request.getBody()).getBytes(UTF_8);
-        byte[] encryptedBody = CipherWorker.encrypt(decryptedBody);
-
         byte[] decryptedHeaderSize = ByteBuffer.allocate(HEADER_BYTE_SIZE).putInt(decryptedHeader.length).array();
         byte[] encryptedHeaderSize = CipherWorker.encrypt(decryptedHeaderSize);
 
-        byte[] decryptedBodySize = ByteBuffer.allocate(BODY_BYTE_SIZE).putInt(decryptedBody.length).array();
-        byte[] encryptedBodySize = CipherWorker.encrypt(decryptedBodySize);
+        byte[] decryptedBody = null;
+        byte[] encryptedBody = null;
 
-        socketWriter.write(encryptedHeaderSize);
-        socketWriter.write(encryptedBodySize);
-        socketWriter.write(encryptedURL);
-        socketWriter.write(encryptedHeader);
-        socketWriter.write(encryptedBody);
-        socketWriter.flush();
+        byte[] decryptedBodySize = null;
+        byte[] encryptedBodySize = null;
+
+        if(request.getHeader().get(CONTENT_TYPE.getValue()).equals(ContentType.STREAM.getValue())) {
+            decryptedBodySize = ByteBuffer.allocate(BODY_BYTE_SIZE).putInt(request.getBodySize()).array();
+            encryptedBodySize = CipherWorker.encrypt(decryptedBodySize);
+
+            BufferedInputStream fileReader = (BufferedInputStream) request.getBody();
+
+            socketWriter.write(encryptedHeaderSize);
+            socketWriter.write(encryptedBodySize);
+            socketWriter.write(encryptedURL);
+            socketWriter.write(encryptedHeader);
+            socketWriter.flush();
+
+            decryptedBody = new byte[DEFAULT_BUFFER_SIZE];
+            int size;
+            while((size = fileReader.read(decryptedBody)) != -1) {
+                encryptedBody = CipherWorker.encrypt(Arrays.copyOf(decryptedBody, size));
+
+                socketWriter.write(encryptedBody);
+                socketWriter.flush();
+            }
+
+        }
+        else if(request.getHeader().get(CONTENT_TYPE.getValue()).equals(ContentType.JSON.getValue())) {
+            decryptedBody = request.getBody() == null ? new byte[0] : ((String)request.getBody()).getBytes(UTF_8);
+            encryptedBody = CipherWorker.encrypt(decryptedBody);
+
+            decryptedBodySize = ByteBuffer.allocate(BODY_BYTE_SIZE).putInt(decryptedBody.length).array();
+            encryptedBodySize = CipherWorker.encrypt(decryptedBodySize);
+
+            socketWriter.write(encryptedHeaderSize);
+            socketWriter.write(encryptedBodySize);
+            socketWriter.write(encryptedURL);
+            socketWriter.write(encryptedHeader);
+            socketWriter.write(encryptedBody);
+            socketWriter.flush();
+        }
     }
 
     public SocketResponse receiveResponse() throws IOException {
@@ -96,7 +127,6 @@ public class SocketClientHandler {
         socketReader.read(encryptedHeader);
         Map<String, String> header = objectMapper.readValue(CipherWorker.decrypt(encryptedHeader), Map.class);
 
-        System.out.println(header);
         Object body = null;
         if(header.get(CONTENT_TYPE.getValue()).equals(ContentType.STREAM.getValue())) {
             body = socketReader;

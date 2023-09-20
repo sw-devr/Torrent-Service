@@ -7,5 +7,5 @@ public interface FileRepository {
 
     void send(BufferedOutputStream socketWriter, String filePath);
 
-    void receive(BufferedInputStream socketReader, String filePath);
+    void receive(BufferedInputStream socketReader, String filePath, int fileSize);
 }

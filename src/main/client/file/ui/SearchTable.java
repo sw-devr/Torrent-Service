@@ -14,14 +14,14 @@ import java.util.Locale;
 public class SearchTable extends JTable {
 
     private final String sessionId;
-    private final JFrame beforeFrame;
+    private final JComponent beforeFrame;
+    private final String searchOption;
 
-    public SearchTable(String sessionId, List<FileMetadata> fileMetadataList, JFrame beforeFrame) {
+    public SearchTable(String sessionId, List<FileMetadata> fileMetadataList, String searchOption, JComponent beforeFrame) {
 
         this.sessionId = sessionId;
         this.beforeFrame = beforeFrame;
-
-        setBounds(10, 100, 1000, 500);
+        this.searchOption = searchOption;
 
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
@@ -106,6 +106,11 @@ public class SearchTable extends JTable {
 
     private void showDetailPage(FileMetadata fileMetadata) {
 
-        DownloadFrame downloadFrame = new DownloadFrame(sessionId, fileMetadata, beforeFrame);
+        if(searchOption.equals("user")) {
+            ModifierFrame downloadFrame = new ModifierFrame(sessionId, fileMetadata, beforeFrame);
+        }else {
+            DownloadFrame downloadFrame = new DownloadFrame(sessionId, fileMetadata, beforeFrame);
+        }
+
     }
 }

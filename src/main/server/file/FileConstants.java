@@ -13,7 +13,6 @@ public class FileConstants {
 
     public static final String FILE_FORMAT_SEPARATOR = "[.]";
     public static final String PATH_REGEX = "/|\\\\";
-    public static final int BUFFER_SIZE = 1024;
     public static final int STREAM_FINAL_VALUE = -1;
 
     public static final int DEFAULT_PAGING_SIZE = 10;

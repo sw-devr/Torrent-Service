@@ -16,10 +16,12 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
 
     private final Path csvFilePath;
     private final Path tempCsvFilePath;
+    private final Path idFilePath;
 
-    public CSVFileMetadataRepository(String csvFile) {
+    public CSVFileMetadataRepository(String csvFile, String idFilePath) {
         this.csvFilePath = Paths.get(csvFile);
-        tempCsvFilePath = Paths.get(CommonConstants.createTempFilePath(csvFile)); //변경해야할 부분
+        this.tempCsvFilePath = Paths.get(CommonConstants.createTempFilePath(csvFile)); //변경해야할 부분
+        this.idFilePath = Paths.get(idFilePath);
     }
 
     @Override
@@ -129,8 +131,9 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
         List<FileMetadata> realFileMetadata = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()))) {
 
-            int start = Math.max(1, cnt-offset-size);
-            int end = Math.max(1, cnt-offset);
+            int start = Math.max(1, cnt-offset-size+1);
+            int end = Math.max(0, cnt-offset);
+            System.out.println(start + " " + end);
 
             for(int i=0;i<start;i++) {
                 if(br.readLine() == null) break;
@@ -149,15 +152,30 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
         for(int i = realFileMetadata.size()-1; i>=0; i--) {
             answer.add(realFileMetadata.get(i));
         }
-
         return answer;
     }
 
     @Override
     public void save(FileMetadata fileMetadata) {
 
+        int id;
+        try(BufferedReader br = new BufferedReader(new FileReader(idFilePath.toFile()))) {
+            id = Integer.parseInt(br.readLine());
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
+        id++;
+        try(BufferedWriter br = new BufferedWriter(new FileWriter(idFilePath.toFile()))) {
+            br.write(Integer.toString(id));
+            br.flush();
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(csvFilePath.toFile(), true))) {
 
+            fileMetadata.setId(id);
             String line = pasrseString(fileMetadata);
             bw.newLine();
             bw.write(line);

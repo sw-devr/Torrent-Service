@@ -2,10 +2,7 @@ package main.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.protocol.ContentType;
-import main.protocol.SocketRequest;
-import main.protocol.SocketResponse;
-import main.protocol.Status;
+import main.protocol.*;
 import main.server.security.CipherWorker;
 
 import java.io.BufferedInputStream;
@@ -45,6 +42,7 @@ public class SocketServerHandler implements Runnable {
 
             SocketResponse socketResponse = handleRequest(socketRequest);
 
+            System.out.println(socketResponse);
             sendResponse(socketWriter, socketResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -103,14 +101,20 @@ public class SocketServerHandler implements Runnable {
 
         if(header.get(CONTENT_TYPE.getValue()).equals(ContentType.STREAM.getValue())) {
             socketRequest.setBody(socketReader);
-        } else if(header.get(CONTENT_TYPE.getValue()).equals(ContentType.JSON.getValue())) {
+        }
+        else if(url.equals(ProtocolConstants.FILE_DOWNLOAD_URL)) {
+            socketRequest.setBody(new BufferedOutputStream(socket.getOutputStream()));
+        }
+        else if(header.get(CONTENT_TYPE.getValue()).equals(ContentType.JSON.getValue())) {
 
             byte[] decryptedBody = new byte[bodySize];
             byte[] encryptedBody = CipherWorker.encrypt(decryptedBody);
 
             socketReader.read(encryptedBody);
             String body = new String(CipherWorker.decrypt(encryptedBody));
-            socketRequest.setBody(body);
+            if(!body.isEmpty()) {
+                socketRequest.setBody(body);
+            }
         }
         return socketRequest;
     }
@@ -156,9 +160,6 @@ public class SocketServerHandler implements Runnable {
         socketWriter.write(encryptedBody);
         socketWriter.flush();
 
-        if(socketResponse.getHeader().get(CONTENT_TYPE.getValue()).equals(ContentType.JSON.getValue())) {
-            socket.close();
-        }
     }
 
 }

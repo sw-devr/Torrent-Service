@@ -3,15 +3,14 @@ package main.client.file.ui;
 import main.client.file.listener.FileMetadataCreateListener;
 import main.client.file.search.UserFileSearcher;
 import main.client.payment.PaymentChargingPointListener;
+import main.client.payment.PaymentUploaderListener;
 import main.client.user.handler.UserHandler;
 import main.client.user.listener.UserLogoutListener;
 import main.client.user.listener.UserWithdrawListener;
-import main.server.file.FileMetadata;
 import main.server.user.ResponseUserDto;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class UserManagementPanel extends JPanel {
 
@@ -37,16 +36,15 @@ public class UserManagementPanel extends JPanel {
 
 
         //유저의 파일 목록 Panel
-        UserFileSearcher userFileSearcher = new UserFileSearcher(user.getUserId());
-        List<FileMetadata> fileMetadataList = userFileSearcher.getFileMetadataList(sessionId, 0);
+        JPanel TotalFileSearchPanel = new JPanel();
 
-        System.out.println(fileMetadataList);
-        JTable fileSearchTable = new SearchTable(sessionId, fileMetadataList, beforeFrame);
-        JScrollPane fileSearchScroll = new JScrollPane(fileSearchTable);
-        fileSearchScroll.setBackground(new Color(255, 255, 255));
-        add(fileSearchScroll);
+        JPanel fileSearchPanel = new FileSearchPanel(sessionId, new UserFileSearcher(user.getUserId()), "user", 0,  TotalFileSearchPanel);
+        fileSearchPanel.setLayout(new BoxLayout(fileSearchPanel, BoxLayout.PAGE_AXIS));
 
-        userManageTabbedPane.addTab("유저 파일 목록", null, fileSearchScroll, null);
+        TotalFileSearchPanel.add(fileSearchPanel);
+        TotalFileSearchPanel.setLayout(new BoxLayout(TotalFileSearchPanel, BoxLayout.Y_AXIS));
+
+        userManageTabbedPane.addTab("유저 파일 목록", null, TotalFileSearchPanel, null);
         userManageTabbedPane.addTab("파일 업로드", null, getUploadPanel(sessionId), null);
         userManageTabbedPane.addTab("포인트 충전", null, getChargingPanel(user), null);
 
@@ -80,6 +78,13 @@ public class UserManagementPanel extends JPanel {
         userGradeText.setFont(new Font("SansSerif", Font.BOLD, 18));
         userGradeText.setBounds(481, 74, 139, 37);
         add(userGradeText);
+
+        JButton gradePurchaseButton = new JButton("업로드 권한 구매");
+        gradePurchaseButton.setHorizontalAlignment(SwingConstants.CENTER);
+        gradePurchaseButton.setBounds(630, 74, 139, 33);
+        gradePurchaseButton.addActionListener(new PaymentUploaderListener(sessionId, user.getUserId(), beforeFrame));
+        add(gradePurchaseButton);
+
 
         JButton logoutButton = new JButton("로그아웃");
         logoutButton.addActionListener(new UserLogoutListener(sessionId, beforeFrame));
@@ -158,7 +163,7 @@ public class UserManagementPanel extends JPanel {
         JButton uploadButton = new JButton("Upload");
         uploadButton.addActionListener(
                 new FileMetadataCreateListener(sessionId, subjectTextField,
-                        descriptionTextField, priceTextField, filepathTextField)
+                        descriptionTextField, priceTextField, filepathTextField, userManageUploadPanel)
         );
 
         uploadButton.setFont(new Font("SansSerif", Font.BOLD, 15));

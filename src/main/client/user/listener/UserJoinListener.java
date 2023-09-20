@@ -2,7 +2,7 @@ package main.client.user.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import main.client.common.SocketClientHandler;
-import main.client.user.StartPageFrame;
+import main.client.user.ui.StartPageFrame;
 import main.protocol.*;
 import main.server.user.RequestJoinDto;
 

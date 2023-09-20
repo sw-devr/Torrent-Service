@@ -1,7 +1,7 @@
 package main.client.user.listener;
 
 import main.client.common.SocketClientHandler;
-import main.client.user.StartPageFrame;
+import main.client.user.ui.StartPageFrame;
 import main.protocol.*;
 
 import javax.swing.*;

@@ -20,9 +20,9 @@ public class CipherWorker {
 
             return cipher.doFinal(data);
         } catch(Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
+            throw new IllegalStateException("데이터 암호화 과정에서 에러 발생");
         }
-        return null;
     }
 
     public static byte[] decrypt(byte[] data) {
@@ -32,8 +32,8 @@ public class CipherWorker {
 
             return cipher.doFinal(data);
         } catch(Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
+            throw new IllegalStateException("데이터 복호화 과정에서 에러 발생");
         }
-        return null;
     }
 }

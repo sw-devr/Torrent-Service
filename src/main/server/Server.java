@@ -24,24 +24,4 @@ public class Server {
             System.out.println(e.getMessage());
         }
     }
-
-/*    private void test() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        URLMapper urlMapper = new URLMapper();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        RequestLoginDto requestJoinDto = new RequestLoginDto();
-        requestJoinDto.setEmail("hihi2@naver.com");
-        requestJoinDto.setPassword("123413");
-
-        SocketRequest socketRequest = new SocketRequest();
-        socketRequest.setUrl("/user/login");
-        Map<String, String> header = new HashMap<>();
-        header.put(CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
-        socketRequest.setHeader(header);
-        socketRequest.setBody(objectMapper.writeValueAsString(requestJoinDto));
-
-        SocketResponse response = urlMapper.handle(socketRequest);
-
-        System.out.println(response);
-    }*/
 }

@@ -1,4 +1,4 @@
-package main.client.user;
+package main.client.user.ui;
 
 import main.client.user.listener.UserJoinListener;
 

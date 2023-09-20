@@ -103,6 +103,27 @@ public class PaymentController {
         }
     }
 
+    @Mapping("/payment/point/refund")
+    public SocketResponse refundFile(SocketRequest request) {
+        try {
+            String sessionId = request.getHeader().get(SESSION_ID.getValue());
+            validateSession(sessionId);
+
+            RequestRefundDto requestParam = objectMapper.readValue((String) request.getBody(), RequestRefundDto.class);
+            long userId = userService.currentUserId(sessionId);
+
+            paymentService.refund(userId, requestParam.getDownloadFilePath());
+
+            return createResponse(Status.SUCCESS.getCode(), request.getHeader(), "환불 완료");
+        }
+        catch (IllegalArgumentException e) {
+            return createResponse(Status.BAD_REQUEST.getCode(), request.getHeader(), e.getMessage());
+        }
+        catch (JsonProcessingException e) {
+            return createResponse(Status.INTERNAL_SERVER_ERROR.getCode(), request.getHeader(), e.getMessage());
+        }
+    }
+
     private void validateSession(String sessionId) {
 
         if(!userService.isLogin(sessionId)) {

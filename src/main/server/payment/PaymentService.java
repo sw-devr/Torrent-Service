@@ -58,4 +58,18 @@ public class PaymentService {
         user.receivePoints(addingPoints);
         userRepository.update(user);
     }
+
+    public void refund(long userId, String downloadFilePath) {
+
+        FileMetadata fileMetadata = fileMetadataRepository.findByPath(downloadFilePath);
+
+        User consumer = userRepository.findById(userId);
+        User producer = userRepository.findById(fileMetadata.getUserId());
+
+        consumer.receivePoints(fileMetadata.getPrice());
+        producer.payPoints(fileMetadata.getPrice());
+
+        userRepository.save(consumer);
+        userRepository.save(producer);
+    }
 }

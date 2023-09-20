@@ -1,7 +1,12 @@
 package main.server.file;
 
+import main.server.user.UserRepository;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
@@ -14,29 +19,39 @@ public class FileService {
 
     FileMetadataRepository fileMetadataRepository;
     FileRepository fileRepository;
+    UserRepository userRepository;
 
-    public FileService(FileMetadataRepository fileMetadataRepository, FileRepository fileRepository) {
+    public FileService(FileMetadataRepository fileMetadataRepository, FileRepository fileRepository, UserRepository userRepository) {
         this.fileMetadataRepository = fileMetadataRepository;
         this.fileRepository = fileRepository;
+        this.userRepository = userRepository;
     }
 
     public boolean upload(BufferedInputStream socketReader, String path) {
 
+        FileMetadata fileMetadata = fileMetadataRepository.findByPath(path);
         try{
-            fileRepository.receive(socketReader, path);
+            System.out.println("파일 사이즈 " + fileMetadata.getSize());
+            fileRepository.receive(socketReader, path, fileMetadata.getSize());
             completeFileUpload(path);
             return true;
-        } catch (Exception e) {
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
+        catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
     }
 
-    public void download(BufferedOutputStream socketWriter, String filePath) {
+    public void download(BufferedOutputStream socketWriter, String filePath, long userId) {
+
+        FileMetadata fileMetadata = fileMetadataRepository.findByPath(filePath);
 
         fileRepository.send(socketWriter, filePath);
+
         //다운로드 횟수 증가
-        FileMetadata fileMetadata = fileMetadataRepository.findByPath(filePath);
         fileMetadata.increaseDownloadCnt();
         fileMetadataRepository.update(fileMetadata);
     }
@@ -77,7 +92,7 @@ public class FileService {
         if(fileMetadata == null) {
             throw new IllegalArgumentException("존재하지 않는 파일입니다.");
         }
-        fileMetadata.update(request.getSubject(), request.getDescription(), request.getPrice());
+        fileMetadata.update(request.getSubject().replaceAll(",", " "), request.getDescription(), request.getPrice());
         fileMetadataRepository.update(fileMetadata);
     }
 
@@ -117,11 +132,19 @@ public class FileService {
             throw new IllegalArgumentException("이미 존재해야할 파일 정보가 없습니다.");
         }
         fileMetadata.completeFileUpload();
+        fileMetadataRepository.update(fileMetadata);
     }
 
     private String createPath(String fileName) {
 
-        return Paths.get(DEFAULT_FILE_STORE_PATH, UUID.randomUUID().toString(), fileName).toString();
+        try{
+            Path directoryPath = Paths.get(DEFAULT_FILE_STORE_PATH, UUID.randomUUID().toString());
+            Files.createDirectories(directoryPath);
+
+            return Paths.get(directoryPath.toString(), fileName).toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

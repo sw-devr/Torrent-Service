@@ -22,16 +22,16 @@ public class CommonConstants {
     public static final String DEFAULT_USER_ID_PATH = Paths.get(FileConstants.DEFAULT_FILE_STORE_PATH, USER_ID_INCREMENT).toString();
 
 
-    public static final int SERVER_PORT = 8000;
+    public static final int SERVER_PORT = 8730;
     public static final int DEFAULT_BUFFER_SIZE = 1024*1024;
     public static final String PATH_REGEX = "/|\\\\";
     public static final String TEMP_PREFIX = "temp_";
     public static final String CSV_COLUMN_SEPARATOR = ",";
 
     public static final UserRepository USER_REPOSITORY = new CSVUserRepository(DEFAULT_USER_DATABASE_PATH, DEFAULT_USER_ID_PATH);
-    public static final FileMetadataRepository FILE_METADATA_REPOSITORY = new CSVFileMetadataRepository(DEFAULT_FILE_METADATA_DATABASE_PATH);
+    public static final FileMetadataRepository FILE_METADATA_REPOSITORY = new CSVFileMetadataRepository(DEFAULT_FILE_METADATA_DATABASE_PATH, DEFAULT_FILE_METADATA_ID_PATH);
     public static final FileRepository FILE_REPOSITORY = new StreamFileRepository();
-    public static final FileService FILE_SERVICE = new FileService(FILE_METADATA_REPOSITORY, FILE_REPOSITORY);
+    public static final FileService FILE_SERVICE = new FileService(FILE_METADATA_REPOSITORY, FILE_REPOSITORY, USER_REPOSITORY);
     public static final UserService USER_SERVICE = new UserService(USER_REPOSITORY, FILE_SERVICE);
     public static final PaymentService PAYMENT_SERVICE = new PaymentService(FILE_SERVICE, USER_REPOSITORY, FILE_METADATA_REPOSITORY);
 

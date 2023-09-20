@@ -1,28 +1,70 @@
 package main.server.file;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import main.protocol.ContentType;
+import main.protocol.SocketHeaderType;
+import main.protocol.Status;
 import main.server.security.CipherWorker;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import static main.protocol.SocketRequest.BODY_BYTE_SIZE;
+import static main.protocol.SocketRequest.HEADER_BYTE_SIZE;
+import static main.protocol.SocketResponse.STATUS_CODE_BYTE_SIZE;
+import static main.server.common.CommonConstants.DEFAULT_BUFFER_SIZE;
 import static main.server.file.FileConstants.*;
 
 public class StreamFileRepository implements FileRepository {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void send(BufferedOutputStream socketWriter, String fileName) {
 
         Path filePath = Paths.get(fileName);
+
         if(!Files.exists(filePath)) {
             throw new IllegalArgumentException(FILE_NOT_EXISTING_MESSAGE);
         }
         if(Files.isDirectory(filePath)) {
             throw new IllegalArgumentException(NOT_FILE_MESSAGE);
         }
-        byte[] buffer = new byte[BUFFER_SIZE];
+
+        //response header 전송
+        try {
+            int bodySize = (int)filePath.toFile().length();
+            Map<String, String> header = new HashMap<>();
+            header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.STREAM.getValue());
+
+            byte[] decryptedStatusCode = ByteBuffer.allocate(STATUS_CODE_BYTE_SIZE).putInt(Status.SUCCESS.getCode()).array();
+            byte[] encryptedStatusCode = CipherWorker.encrypt(decryptedStatusCode);
+
+            byte[] decryptedHeader = objectMapper.writeValueAsBytes(header);
+            byte[] encryptedHeader = CipherWorker.encrypt(decryptedHeader);
+
+            byte[] decryptedHeaderSize = ByteBuffer.allocate(HEADER_BYTE_SIZE).putInt(decryptedHeader.length).array();
+            byte[] encryptedHeaderSize = CipherWorker.encrypt(decryptedHeaderSize);
+
+            byte[] decryptedBodySize = ByteBuffer.allocate(BODY_BYTE_SIZE).putInt(bodySize).array();
+            byte[] encryptedBodySize = CipherWorker.encrypt(decryptedBodySize);
+
+            socketWriter.write(encryptedHeaderSize);
+            socketWriter.write(encryptedBodySize);
+            socketWriter.write(encryptedStatusCode);
+            socketWriter.write(encryptedHeader);
+            socketWriter.flush();
+        } catch (IOException e) {
+
+        }
+
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         int size;
 
         System.out.println("파일 전송 시작");
@@ -40,12 +82,12 @@ public class StreamFileRepository implements FileRepository {
             System.out.println("파일 전송 성공");
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            System.out.println("파일 전송 실패");
+            throw new IllegalStateException("파일 전송 실패");
         }
     }
 
     @Override
-    public void receive(BufferedInputStream socketReader, String fileName) {
+    public void receive(BufferedInputStream socketReader, String fileName, int fileSize) {
 
         Path filePath = Paths.get(fileName);
         if(Files.exists(filePath)) {
@@ -54,23 +96,34 @@ public class StreamFileRepository implements FileRepository {
         if(!isCorrectFileFormat(extractFileName(filePath.toString()))) {
             throw new IllegalArgumentException(NOT_FILE_MESSAGE);
         }
-        byte[] buffer = new byte[BUFFER_SIZE];
-        byte[] encryptedBuffer = CipherWorker.encrypt(buffer);
 
         System.out.println("파일 저장 시작");
+
+        int sumSize = 0;
         try(BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(fileName))) {
-            int size;
-            while((size = socketReader.read(encryptedBuffer)) != STREAM_FINAL_VALUE) {
+            while(true) {
+                int bufferSize = Math.min(fileSize-sumSize, DEFAULT_BUFFER_SIZE);
+                byte[] buffer = new byte[bufferSize];
+                byte[] encryptedBuffer = CipherWorker.encrypt(buffer);
+
+                int size = socketReader.read(encryptedBuffer);
+                if(size == -1) {
+                    break;
+                }
                 byte[] encryptedData = Arrays.copyOf(encryptedBuffer, size);
                 byte[] decryptedData = CipherWorker.decrypt(encryptedData);
-
                 assert decryptedData != null;
 
                 fileOutputStream.write(decryptedData);
                 fileOutputStream.flush();
+                sumSize += decryptedData.length;
+                if(sumSize >= fileSize) {
+                    break;
+                }
             }
             System.out.println("파일 저장 성공");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.out.println(e.getMessage());
             System.out.println("파일 저장 실패");
         }
@@ -85,6 +138,6 @@ public class StreamFileRepository implements FileRepository {
 
     private boolean isCorrectFileFormat(String realFileName) {
 
-        return realFileName.split(FILE_FORMAT_SEPARATOR).length == 2;
+        return realFileName.split(FILE_FORMAT_SEPARATOR).length >= 2;
     }
 }

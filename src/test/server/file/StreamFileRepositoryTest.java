@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import static main.server.common.CommonConstants.DEFAULT_BUFFER_SIZE;
 import static main.server.file.FileConstants.*;
 
 public class StreamFileRepositoryTest {
@@ -44,7 +45,7 @@ public class StreamFileRepositoryTest {
         //then
         BufferedInputStream socketReader = new BufferedInputStream(new FileInputStream(socketPath.toFile()));
         int totalSize = 0;
-        byte[] decryptedBuffer = new byte[BUFFER_SIZE];
+        byte[] decryptedBuffer = new byte[DEFAULT_BUFFER_SIZE];
         byte[] encryptedBuffer = CipherWorker.encrypt(decryptedBuffer);
 
         int size;
@@ -126,7 +127,7 @@ public class StreamFileRepositoryTest {
         BufferedInputStream encryptedSocketReader = new BufferedInputStream(new FileInputStream(encryptedSocketPath.toFile()));
 
         //when
-        streamFileRepository.receive(encryptedSocketReader, validFilePath.toString());
+        streamFileRepository.receive(encryptedSocketReader, validFilePath.toString(), (int)validFilePath.toFile().length());
         encryptedSocketReader.close();
 
         //then
@@ -156,7 +157,7 @@ public class StreamFileRepositoryTest {
 
         //when & then
         try (BufferedInputStream encryptedSocketReader = new BufferedInputStream(new FileInputStream(encryptedSocketPath.toFile()))) {
-            streamFileRepository.receive(encryptedSocketReader, alreadyExistingFilePath.toString());
+            streamFileRepository.receive(encryptedSocketReader, alreadyExistingFilePath.toString(), (int)alreadyExistingFilePath.toFile().length());
         } catch (IllegalArgumentException e) {
             if(e.getMessage().equals(ALREADY_EXISTING_FILE_NAME)) {
                 System.out.println("저장 테스트 2 성공");
@@ -183,7 +184,7 @@ public class StreamFileRepositoryTest {
 
         //when & then
         try (BufferedInputStream encryptedSocketReader = new BufferedInputStream(new FileInputStream(encryptedSocketPath.toFile()))) {
-            streamFileRepository.receive(encryptedSocketReader, notFilePath.toString());
+            streamFileRepository.receive(encryptedSocketReader, notFilePath.toString(), (int)notFilePath.toFile().length());
         } catch (IllegalArgumentException e) {
             if(e.getMessage().equals(NOT_FILE_MESSAGE)) {
                 System.out.println("저장 테스트 3 성공");

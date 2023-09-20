@@ -18,5 +18,6 @@ public class ProtocolConstants {
     public static final String PURCHASE_FILE_URL = "/payment/file/purchase";
     public static final String PURCHASE_AUTHORITY_URL = "/payment/authority/purchase";
     public static final String CHARGING_POINTS_URL = "/payment/point/charging";
+    public static final String REFUND_FILE_URL = "/payment/file/refund";
 
 }

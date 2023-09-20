@@ -1,6 +1,7 @@
 package main.client.file.ui;
 
-import main.client.payment.PaymentFileListener;
+import main.client.file.listener.FileMetadataDeleteListener;
+import main.client.file.listener.FileMetadataUpdateListener;
 import main.client.user.handler.UserHandler;
 import main.server.file.FileMetadata;
 import main.server.user.ResponseUserDto;
@@ -12,15 +13,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DownloadFrame extends JFrame {
+public class ModifierFrame extends JFrame {
 
     private JTextField subjectTextField;
     private JTextField sizeTextField;
     private JTextField priceTextField;
     private JTextField createdTimestampTextField;
     private JTextField downloadCntTextField;
+    private JTextArea descriptionTextArea;
+    private final FileMetadata fileMetadata;
 
-    public DownloadFrame(String sessionId, FileMetadata fileMetadata, JComponent beforeFrame) {
+    public ModifierFrame(String sessionId, FileMetadata fileMetadata, JComponent beforeFrame) {
+
+        this.fileMetadata = fileMetadata;
 
         UserHandler userHandler = new UserHandler();
         ResponseUserDto consumer = userHandler.getUser(sessionId);
@@ -47,7 +52,7 @@ public class DownloadFrame extends JFrame {
         subjectTextField.setBounds(326, 80, 563, 37);
         panel.add(subjectTextField);
         subjectTextField.setForeground(Color.DARK_GRAY);
-        subjectTextField.setEditable(false);
+        subjectTextField.setEditable(true);
         subjectTextField.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         subjectTextField.setColumns(10);
         subjectTextField.setBackground(new Color(186, 219, 241));
@@ -84,7 +89,7 @@ public class DownloadFrame extends JFrame {
         priceTextField.setHorizontalAlignment(SwingConstants.CENTER);
         priceTextField.setBounds(326, 207, 158, 41);
         panel.add(priceTextField);
-        priceTextField.setEditable(false);
+        priceTextField.setEditable(true);
         priceTextField.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         priceTextField.setColumns(10);
         priceTextField.setBackground(new Color(186, 219, 241));
@@ -132,28 +137,29 @@ public class DownloadFrame extends JFrame {
         panel.add(descriptionLabel);
         descriptionLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
 
-        JTextArea descriptionTextArea = new JTextArea(fileMetadata.getDescription());
+        descriptionTextArea = new JTextArea(fileMetadata.getDescription());
         descriptionTextArea.setBounds(326, 299, 488, 215);
         panel.add(descriptionTextArea);
-        descriptionTextArea.setEditable(false);
+        descriptionTextArea.setEditable(true);
         descriptionTextArea.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         descriptionTextArea.setBackground(new Color(186, 219, 241));
         descriptionTextArea.setBorder(new LineBorder(Color.BLACK, 2));
 
+        JButton updateButton = new JButton("수 정");
+        updateButton.setBounds(238, 555, 182, 50);
+        panel.add(updateButton);
+        updateButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        updateButton.addActionListener(new FileMetadataUpdateListener(sessionId, fileMetadata.getId(), consumer.getUserId(),
+                priceTextField, subjectTextField, descriptionTextArea, beforeFrame, this));
 
-        // Button(이전페이지)
-        JButton goBackButton = new JButton("이전페이지로");
-        goBackButton.setBounds(538, 555, 182, 50);
-        panel.add(goBackButton);
-        goBackButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
-        goBackButton.addActionListener(e -> setVisible(false));
 
-        // Button(구매하기)
-        JButton buyButton = new JButton("구매하기");
-        buyButton.setBounds(238, 555, 182, 50);
-        panel.add(buyButton);
-        buyButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
-        buyButton.addActionListener(new PaymentFileListener(sessionId, fileMetadata.getId(), consumer.getUserId()));
+        JButton deleteButton = new JButton("삭 제");
+        deleteButton.setBounds(538, 555, 182, 50);
+        panel.add(deleteButton);
+        deleteButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        deleteButton.addActionListener(new FileMetadataDeleteListener(sessionId, fileMetadata.getId(), consumer.getUserId(), beforeFrame, this));
+
+
 
 
 
@@ -162,6 +168,10 @@ public class DownloadFrame extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle("다운로드 페이지");
+        setTitle("유저 업로딩 상세 파일 페이지");
+    }
+
+    public FileMetadata getFileMetadata() {
+        return this.fileMetadata;
     }
 }
