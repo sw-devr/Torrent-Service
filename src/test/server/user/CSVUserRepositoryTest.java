@@ -5,54 +5,47 @@ import main.server.user.User;
 import main.server.user.UserRepository;
 import main.server.user.UserRole;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.io.*;
+import java.nio.file.Paths;
 
-import static main.server.user.UserConstants.ALREADY_EXISTING_USER_MESSAGE;
-import static main.server.user.UserConstants.NOT_EXISTING_USER_MESSAGE;
+import static main.server.common.CommonConstants.CSV_COLUMN_SEPARATOR;
 
 public class CSVUserRepositoryTest {
 
-    private static final String PATH = Path.of("C:\\Users\\Public\\Downloads\\user_database_test.txt").toString();
-    private static final String ID_PATH = Path.of("C:\\Users\\Public\\Downloads\\user_id_test.txt").toString();
-    private static final UserRepository userRepository = new CSVUserRepository(PATH, ID_PATH);
+    private static final String HOME_PATH = Paths.get("").toAbsolutePath().toString();
+    private static final String USER_DATABASE_FILE_PATH = Paths.get(HOME_PATH, "src/test/server/user/user_database_test.txt").toString();
+    private static final String USER_ID_DATABASE_FILE_PATH = Paths.get(HOME_PATH, "src/test/server/user/user_id_database_test.txt").toString();
+    private static final UserRepository userRepository = new CSVUserRepository(USER_DATABASE_FILE_PATH, USER_ID_DATABASE_FILE_PATH);
 
     public static void main(String[] args) {
 
         CSVUserRepositoryTest test = new CSVUserRepositoryTest();
 
-        //testFindById
-/*        for(long i=0;i<10;i++) {
-            test.testFindById(i);
-        }
-        test.testFindById(10000);*/
-
-        //testFindByEmail
-/*        test.testFindByEmail("hi5@naver.com");
-        test.testFindByEmail("dsgsd@gmail.com");
-        test.testFindByEmail("notExistingUser@naver.com");*/
-
-        //testSaveWithValidParam
-/*        for(UserDto notExistingUser : UserTestCase.getNotExsitingUserList()) {
-            test.testSaveWithValidParam(notExistingUser);
-        }*/
-
-/*        for(UserDto updatedUser : UserTestCase.getUpdatedUserList()) {
-            test.testUpdateWithValidParam(updatedUser);
-        }*/
-
-        for(int i=0;i<7;i++) {
-            test.testDeleteWithExistingUser(i);
+        for(Long userToFindById : UserTestCase.getUserListToFindById()) {
+            test.testFindById(userToFindById);
         }
 
+        for(String userToFindByEmail : UserTestCase.getUserListToFindByEmail()) {
+            test.testFindByEmail(userToFindByEmail);
+        }
+
+        for(User notExistingUser : UserTestCase.getUserListToSave()) {
+            test.testSave(notExistingUser);
+        }
+
+        for(User userToUpdate : UserTestCase.getUserListToUpdate()) {
+            test.testUpdate(userToUpdate);
+        }
+
+        for(Long userToDelete : UserTestCase.getUserListToDelete()) {
+            test.testDelete(userToDelete);
+        }
     }
 
 
 
     /**
-     * findById test 1 : 요청 id 값에 일치하는 데이터가 존재할 경우 그 값을 리턴하고 없을 경우 null을 리턴한다.
+     * findById test : 요청 id 값에 일치하는 데이터가 존재할 경우 그 값을 리턴하고 없을 경우 null을 리턴한다.
      */
      private void testFindById(long id) {
 
@@ -60,12 +53,12 @@ public class CSVUserRepositoryTest {
         User user = userRepository.findById(id);
 
         //then
-        try(BufferedReader br = new BufferedReader(new FileReader(PATH))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(USER_DATABASE_FILE_PATH))) {
 
             br.readLine();
             String line;
             while((line = br.readLine()) != null) {
-                User candidateUser = parseUserDto(line);
+                User candidateUser = parseUser(line);
                 if(id != candidateUser.getId()) {
                     continue;
                 }
@@ -85,7 +78,7 @@ public class CSVUserRepositoryTest {
     }
 
     /**
-     * findByName test 1 : 요청 값 subject에 일치하는 file 데이터가 존재할 경우 그 값을 리턴하고 없을 경우 null을 리턴한다.
+     * findByEmail test : 요청 email에 일치하는 유저 데이터가 존재할 경우 그 값을 리턴하고 없을 경우 null을 리턴한다.
     */
     private void testFindByEmail(String email) {
 
@@ -93,12 +86,12 @@ public class CSVUserRepositoryTest {
         User user = userRepository.findByEmail(email);
 
         //then
-        try(BufferedReader br = new BufferedReader(new FileReader(PATH))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(USER_DATABASE_FILE_PATH))) {
 
             br.readLine();
             String line;
             while((line = br.readLine()) != null) {
-                User candidateUser = parseUserDto(line);
+                User candidateUser = parseUser(line);
                 if(!candidateUser.getEmail().equals(email)) {
                     continue;
                 }
@@ -119,13 +112,12 @@ public class CSVUserRepositoryTest {
 
 
     /**
-     * save test 1 : 요청 유저데이터가 기존에 존재하지 않는 데이터일 경우 저장에 성공한다.
+     * save test : 요청 유저 데이터를 저장한다.
      */
-    private void testSaveWithValidParam(User requestUser) {
+    private void testSave(User requestUser) {
 
         //given
-        if(userRepository.findById(requestUser.getId()) != null ||
-                userRepository.findByEmail(requestUser.getEmail()) != null) {
+        if(userRepository.findByEmail(requestUser.getEmail()) != null) {
             throw new IllegalArgumentException("존재하지 않아야하는 유저데이터로 테스트를 진행해야 합니다");
         }
 
@@ -137,134 +129,114 @@ public class CSVUserRepositoryTest {
         if(!savedUser.equals(requestUser)) {
             throw new IllegalStateException("저장시도한 값과 저장된 값이 다릅니다.");
         }
-        System.out.println("저장 테스트 케이스 1 성공");
-        userRepository.delete(requestUser.getId());
-    }
-
-
-    /**
-     *  save test 2 : 이미 존재하는 유저 email, id로 저장을 시도할 경우 예외가 발생한다.
-     */
-    private void testSaveWithAlreadyExistingUser(User user) {
-
-        //given
-        if(userRepository.findById(user.getId()) == null
-                && userRepository.findByEmail(user.getEmail()) == null) {
-            throw new IllegalArgumentException("이미 존재하는 유저로 테스트를 진행해야 합니다.");
-        }
-
-        //when & then
-        try{
-            userRepository.save(user);
-        } catch (IllegalArgumentException e) {
-            if(e.getMessage().equals(ALREADY_EXISTING_USER_MESSAGE)) {
-                System.out.println("저장 테스트 케이스 2 성공");
-                return;
+        try(BufferedReader br = new BufferedReader(new FileReader(USER_ID_DATABASE_FILE_PATH))) {
+            long id = Long.parseLong(br.readLine())-1;
+            if((id != requestUser.getId()) && (requestUser.getId() == savedUser.getId())) {
+                throw new IllegalStateException("자동 id 생성 로직에 문제가 있습니다.");
             }
+            if((id == requestUser.getId()) && (requestUser.getId() != savedUser.getId())) {
+                throw new IllegalStateException("자동 id 생성 로직에 문제가 있습니다.");
+            }
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
         }
-        throw new IllegalStateException("이미 존재하는 유저에 대한 예외 처리가 실패했습니다.");
+        System.out.println("저장 테스트 성공 " + savedUser);
+
+        //후처리
+        userRepository.delete(requestUser.getId());
+        long id;
+        try(BufferedReader br = new BufferedReader(new FileReader(USER_ID_DATABASE_FILE_PATH))) {
+            id = Long.parseLong(br.readLine());
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
+        try(BufferedWriter br = new BufferedWriter(new FileWriter(USER_ID_DATABASE_FILE_PATH))) {
+            br.write(Long.toString(id-1));
+            br.flush();
+        } catch (IOException e) {
+            System.out.println("파일 쓰는 과정에서 예외가 발생함");
+            throw new RuntimeException(e);
+        }
     }
 
 
     /**
-     * update test 1 : 이미 존재하는 유저에 대해 업데이트 요청시 정상적으로 업데이트 된다.
+     * update test : 업데이트 요청시 이미 있는 유저는 정상적으로 업데이트되어 true를 리턴, 없으면 변화 없이 false를 리턴.
      */
-    private void testUpdateWithValidParam(User user) {
+    private void testUpdate(User user) {
 
         //given
         User beforeUser = userRepository.findById(user.getId());
-        if(!beforeUser.equals(user)) {
-            throw new IllegalArgumentException("같은 유저를 기준으로 테스트해야합니다.");
-        }
 
         //when
-        userRepository.update(user);
+        boolean isUpdated = userRepository.update(user);
 
         //then
         User changedUser = userRepository.findById(user.getId());
-        if(changedUser == null) {
-            throw new IllegalStateException("업데이트 되어야하는 데이터가 존재하지 않습니다.");
+
+        if(beforeUser == null && isUpdated) {
+            throw new IllegalStateException("존재하지 않는 유저가 업데이트 되었다고 결과를 출력합니다");
         }
-        if(!changedUser.equals(beforeUser)) {
+        if(beforeUser != null && !isUpdated) {
+            throw new IllegalStateException("존재하는 유저가 업데이트 되지 않았다고 결과를 출력합니다.");
+        }
+        if(changedUser != null && !changedUser.equals(user)) {
             throw new IllegalStateException("업데이트 전과 업데이트 후의 유저가 같은 유저여야 합니다.");
         }
-        userRepository.update(beforeUser);
-        System.out.println("업데이트 테스트 케이스 1 성공");
-    }
+        System.out.printf("업데이트 테스트 케이스 1 성공 before user : %s => after user : %s\n", beforeUser, changedUser);
 
-
-    /**
-     * update test 2 : 존재하지 않는 데이터를 업데이트 시도한다면 예외가 발생한다.
-     */
-    private void testUpdateWithNotExistingUser(User user) {
-
-        //given
-        User beforeUser = userRepository.findById(user.getId());
+        //후처리
         if(beforeUser != null) {
-            throw new IllegalArgumentException("저장소에 없어야 할 파일 메타데이터가 저장되어 있습니다.");
+            userRepository.update(beforeUser);
         }
-
-        //when & then
-        try{
-            userRepository.update(user);
-        } catch (IllegalArgumentException e) {
-            if(e.getMessage().equals(NOT_EXISTING_USER_MESSAGE)) {
-                System.out.println("업데이트 테스트 케이스 2 성공");
-                return;
-            }
-        }
-        throw new IllegalStateException("존재하지 않는 유저에 대한 예외처리가 실패했습니다.");
     }
 
 
     /**
-     * delete test 1 : 존재하는 유저를 삭제시도한다면 삭제된다.
+     * delete test : 삭제 요청시 이미 존재하는 유저면 삭제하고 true를 리턴, 없다면 변화 없이 false 리턴
      */
-    private void testDeleteWithExistingUser(long id) {
+    private void testDelete(long id) {
 
         //given
         User beforeUser = userRepository.findById(id);
 
         //when
-        userRepository.delete(id);
+        boolean isDeleted = userRepository.delete(id);
 
         //then
         User afterUser = userRepository.findById(id);
+        if(beforeUser != null && !isDeleted) {
+            throw new IllegalStateException("삭제되어야할 유저 데이터가 삭제되지 않았습니다.");
+        }
+        if(beforeUser == null && isDeleted) {
+            throw new IllegalStateException("존재하지 않는 유저 데이터를 삭제했다는 메세지가 나왔습니다.");
+        }
         if(afterUser != null) {
-            throw new IllegalStateException("삭제되어야할 파일 메타데이터가 삭제되지 않았습니다.");
+            throw new IllegalStateException("존재해서는 안되는 유저가 존재합니다.");
         }
+        System.out.println("삭제 테스트 케이스 1 성공 " + beforeUser);
+
+        //후처리
         if(beforeUser != null) {
-            userRepository.save(beforeUser);
-        }
-        System.out.println("삭제 테스트 케이스 1 성공");
-    }
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(USER_DATABASE_FILE_PATH, true))) {
 
+                String line = pasrseString(beforeUser);
 
-    /**
-     * delete test 2 : 존재하지 않는 유저를 삭제 시도한다면 예외가 발생한다.
-     */
-    private void testDeleteWithNotExistingUser(long id) {
-
-        //given
-        User user = userRepository.findById(id);
-        if(user != null) {
-            throw new IllegalArgumentException("존재하지 않는 유저로 테스트를 해야합니다.");
-        }
-
-        //when & then
-        try{
-            userRepository.delete(id);
-        } catch (IllegalArgumentException e) {
-            if(e.getMessage().equals(NOT_EXISTING_USER_MESSAGE)) {
-                System.out.println("삭제 테스트 케이스 2 성공");
-                return;
+                bw.newLine();
+                bw.write(line);
+                bw.flush();
+            } catch (IOException e) {
+                System.out.println("파일 쓰는 과정에서 예외가 발생함");
+                throw new RuntimeException(e);
             }
         }
-        throw new IllegalStateException("존재하지 않는 유저에 대한 예외 처리가 실패했습니다.");
+
     }
 
 
-    private User parseUserDto(String line) {
+    private User parseUser(String line) {
 
         String[] columns = line.split(",");
         StringBuilder password = new StringBuilder();
@@ -282,5 +254,14 @@ public class CSVUserRepositoryTest {
         user.setPoints(Long.parseLong(columns[columns.length-1]));
 
         return user;
+    }
+
+    private String pasrseString(User user) {
+
+        return user.getId() + CSV_COLUMN_SEPARATOR +
+                user.getEmail() + CSV_COLUMN_SEPARATOR +
+                user.getPassword() + CSV_COLUMN_SEPARATOR +
+                user.getRole().toString() + CSV_COLUMN_SEPARATOR +
+                user.getPoints();
     }
 }

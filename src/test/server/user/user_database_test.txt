@@ -1,0 +1,6 @@
+id,email,role,points
+10000000000,test5@naver.com,비밀번호5,GENERAL,0
+0,test1@naver.com,비밀번호1,GENERAL,500
+1,test2@naver.com,비밀번호2,GENERAL,1000
+2,test3@naver.com,비밀번호3,UPLOADER,1500
+3,test4@naver.com,비밀번호4,GENERAL,20000000000
