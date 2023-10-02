@@ -68,16 +68,15 @@ public class CSVUserRepository implements UserRepository {
     @Override
     public void save(User user) {
 
-        int id;
+        long id;
         try(BufferedReader br = new BufferedReader(new FileReader(idFilePath.toFile()))) {
-            id = Integer.parseInt(br.readLine());
+            id = Long.parseLong(br.readLine());
         } catch (IOException e) {
             System.out.println("파일 쓰는 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
-        id++;
         try(BufferedWriter br = new BufferedWriter(new FileWriter(idFilePath.toFile()))) {
-            br.write(Integer.toString(id));
+            br.write(Long.toString(id+1));
             br.flush();
         } catch (IOException e) {
             System.out.println("파일 쓰는 과정에서 예외가 발생함");
@@ -100,7 +99,9 @@ public class CSVUserRepository implements UserRepository {
 
 
     @Override
-    public void update(User user) {
+    public boolean update(User user) {
+
+        boolean isUpdated = false;
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()));
             BufferedWriter bw = new BufferedWriter(new FileWriter(tempCsvFilePath.toFile()))) {
@@ -110,8 +111,9 @@ public class CSVUserRepository implements UserRepository {
 
             while((line = br.readLine()) != null) {
                 User candidateUser = parseUser(line);
-                if(candidateUser.equals(user)) {
+                if(candidateUser.getId() == user.getId()) {
                     line = pasrseString(user);
+                    isUpdated = true;
                 }
                 bw.newLine();
                 bw.write(line);
@@ -136,11 +138,13 @@ public class CSVUserRepository implements UserRepository {
             throw new RuntimeException(e);
         }
 
-
+        return isUpdated;
     }
 
     @Override
-    public void delete(long id) {
+    public boolean delete(long id) {
+
+        boolean isDeleted = false;
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()));
             BufferedWriter bw = new BufferedWriter(new FileWriter(tempCsvFilePath.toFile()))) {
@@ -154,6 +158,7 @@ public class CSVUserRepository implements UserRepository {
                 }
                 User candidateUser = parseUser(line);
                 if(candidateUser.getId() == id) {
+                    isDeleted = true;
                     continue;
                 }
                 bw.newLine();
@@ -178,6 +183,8 @@ public class CSVUserRepository implements UserRepository {
             System.out.println("유저 데이터 삭제 기능의 파일 삭제 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
+
+        return isDeleted;
     }
 
 

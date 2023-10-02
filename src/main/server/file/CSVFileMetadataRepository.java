@@ -158,16 +158,15 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
     @Override
     public void save(FileMetadata fileMetadata) {
 
-        int id;
+        long id;
         try(BufferedReader br = new BufferedReader(new FileReader(idFilePath.toFile()))) {
-            id = Integer.parseInt(br.readLine());
+            id = Long.parseLong(br.readLine());
         } catch (IOException e) {
             System.out.println("파일 쓰는 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
-        id++;
         try(BufferedWriter br = new BufferedWriter(new FileWriter(idFilePath.toFile()))) {
-            br.write(Integer.toString(id));
+            br.write(Long.toString(id+1));
             br.flush();
         } catch (IOException e) {
             System.out.println("파일 쓰는 과정에서 예외가 발생함");
@@ -188,7 +187,9 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
 
 
     @Override
-    public void update(FileMetadata fileMetadata) {
+    public boolean update(FileMetadata fileMetadata) {
+
+        boolean isUpdated = false;
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()));
             BufferedWriter bw = new BufferedWriter(new FileWriter(tempCsvFilePath.toFile()))) {
@@ -198,7 +199,8 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
 
             while((line = br.readLine()) != null) {
                 FileMetadata candidateFileMetadata = parseFileDto(line);
-                if(candidateFileMetadata.equals(fileMetadata)) {
+                if(candidateFileMetadata.getId() == fileMetadata.getId()) {
+                    isUpdated = true;
                     line = pasrseString(fileMetadata);
                 }
                 bw.newLine();
@@ -223,11 +225,13 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
             System.out.println("파일메타데이터 업데이트 기능의 파일 삭제 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
-
+        return isUpdated;
     }
 
     @Override
-    public void delete(long id) {
+    public boolean delete(long id) {
+
+        boolean isDeleted = false;
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()));
             BufferedWriter bw = new BufferedWriter(new FileWriter(tempCsvFilePath.toFile()))) {
@@ -238,6 +242,7 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
             while((line = br.readLine()) != null) {
                 FileMetadata candidateFileMetadata = parseFileDto(line);
                 if(candidateFileMetadata.getId() == id) {
+                    isDeleted = true;
                     continue;
                 }
                 bw.newLine();
@@ -262,11 +267,13 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
             System.out.println("파일메타데이터 삭제 기능의 파일 삭제 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
+        return isDeleted;
     }
 
     @Override
-    public void deleteAll(List<Long> fileIds) {
+    public boolean deleteAll(List<Long> fileIds) {
 
+        boolean isDeleted = false;
         fileIds.sort(Comparator.naturalOrder());
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFilePath.toFile()));
@@ -285,6 +292,9 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
                 bw.newLine();
                 bw.write(line);
             }
+            if(idx == fileIds.size()) {
+                isDeleted = true;
+            }
             bw.flush();
         } catch (IOException e) {
             System.out.println("파일 메타데이터 삭제 과정에서 예외가 발생함");
@@ -304,6 +314,7 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
             System.out.println("파일메타데이터 삭제 기능의 파일 삭제 과정에서 예외가 발생함");
             throw new RuntimeException(e);
         }
+        return isDeleted;
     }
 
     private String pasrseString(FileMetadata fileMetadata) {
@@ -326,7 +337,7 @@ public class CSVFileMetadataRepository implements FileMetadataRepository{
         StringBuilder description = new StringBuilder();
         for(int i=5;i<columns.length-4;i++) {
             description.append(columns[i]);
-            description.append(",");
+            description.append(CSV_COLUMN_SEPARATOR);
         }
         description.delete(description.length()-1, description.length());
 

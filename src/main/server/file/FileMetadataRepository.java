@@ -16,10 +16,10 @@ public interface FileMetadataRepository {
 
     void save(FileMetadata fileMetadata);
 
-    void update(FileMetadata fileMetadata);
+    boolean update(FileMetadata fileMetadata);
 
-    void delete(long id);
+    boolean delete(long id);
 
-    void deleteAll(List<Long> fileIds);
+    boolean deleteAll(List<Long> fileIds);
 
 }
