@@ -1,5 +1,6 @@
 package main.server.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import main.server.file.*;
 import main.server.payment.PaymentService;
 import main.server.user.CSVUserRepository;
@@ -28,6 +29,7 @@ public class CommonConstants {
     public static final String TEMP_PREFIX = "temp_";
     public static final String CSV_COLUMN_SEPARATOR = ",";
 
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static final UserRepository USER_REPOSITORY = new CSVUserRepository(DEFAULT_USER_DATABASE_PATH, DEFAULT_USER_ID_PATH);
     public static final FileMetadataRepository FILE_METADATA_REPOSITORY = new CSVFileMetadataRepository(DEFAULT_FILE_METADATA_DATABASE_PATH, DEFAULT_FILE_METADATA_ID_PATH);
     public static final FileRepository FILE_REPOSITORY = new StreamFileRepository();

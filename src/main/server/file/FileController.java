@@ -60,7 +60,7 @@ public class FileController {
             }
             String path = request.getHeader().get(DOWNLOAD_PATH_URL.getValue());
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
 
             //비지니스 로직
             fileService.download((BufferedOutputStream) request.getBody(), path, userId);
@@ -97,7 +97,7 @@ public class FileController {
             validateSession(sessionId);
 
             RequestCreateFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestCreateFileMetadataDto.class);
-            if(requestParam.getUserId() != userService.currentUserId(sessionId)) {
+            if(requestParam.getUserId() != userService.findUserIdBySessionId(sessionId)) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
             String uploadPath = fileService.create(requestParam);
@@ -143,7 +143,7 @@ public class FileController {
             validateSession(sessionId);
             RequestSearchFromUserDto requestParam = objectMapper.readValue((String)request.getBody(), RequestSearchFromUserDto.class);
 
-            if(requestParam.getUserId() != userService.currentUserId(sessionId)) {
+            if(requestParam.getUserId() != userService.findUserIdBySessionId(sessionId)) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
 
@@ -189,7 +189,7 @@ public class FileController {
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
             validateSession(sessionId);
 
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
             RequestUpdateFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestUpdateFileMetadataDto.class);
             if(userId != requestParam.getUserId()) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -217,7 +217,7 @@ public class FileController {
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
             validateSession(sessionId);
 
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
             RequestDeleteFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestDeleteFileMetadataDto.class);
             if(userId != requestParam.getUserId()) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");

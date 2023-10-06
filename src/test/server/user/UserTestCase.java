@@ -7,9 +7,11 @@ import main.protocol.SocketHeaderType;
 import main.protocol.SocketRequest;
 import main.server.common.CommonConstants;
 import main.server.user.RequestJoinDto;
+import main.server.user.RequestLoginDto;
 import main.server.user.User;
 import main.server.user.UserRole;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +76,7 @@ public class UserTestCase {
         return List.of(0L,1L,2L,3L,4L,5L,6L,100000L);
     }
 
-    static List<SocketRequest> getSocketRequestWithInvalidRequestBody() throws JsonProcessingException {
+    static List<SocketRequest> getSocketRequestWithInvalidJoin() throws JsonProcessingException {
 
         RequestJoinDto requestBody1 = new RequestJoinDto();
         requestBody1.setEmail("invalidEmail");
@@ -133,7 +135,7 @@ public class UserTestCase {
         return List.of(request1, request2, request3, request4, request5, request6);
     }
 
-    static List<SocketRequest> getSocketRequestWithValidRequestBody() throws JsonProcessingException {
+    static List<SocketRequest> getSocketRequestWithValidJoin() throws JsonProcessingException {
 
         RequestJoinDto requestBody1 = new RequestJoinDto();
         requestBody1.setEmail("valid@naver.com");
@@ -172,5 +174,97 @@ public class UserTestCase {
         request4.setBody(CommonConstants.OBJECT_MAPPER.writeValueAsString(requestBody4));
 
         return List.of(request1, request2, request3, request4);
+    }
+
+    static List<SocketRequest> getSocketRequestWithValidLogin() throws JsonProcessingException {
+
+        RequestLoginDto requestBody1 = new RequestLoginDto();
+        requestBody1.setEmail("valid@naver.com");
+        requestBody1.setPassword("Valid1234!");
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_LOGIN_URL);
+        request1.setHeader(header);
+        request1.setBody(CommonConstants.OBJECT_MAPPER.writeValueAsString(requestBody1));
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithValidLogout() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+        header.put(SocketHeaderType.SESSION_ID.getValue(), "sessionId1");
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_LOGOUT_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithInvalidLogout() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_LOGOUT_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithValidFindUser() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+        header.put(SocketHeaderType.SESSION_ID.getValue(), "sessionId1");
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_FIND_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithInvalidFindUser() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_FIND_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithValidDelete() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+        header.put(SocketHeaderType.SESSION_ID.getValue(), "sessionId1");
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_DELETE_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
+    }
+
+    static List<SocketRequest> getSocketRequestWithInvalidDelete() {
+
+        Map<String, String> header = new HashMap<>();
+        header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
+
+        SocketRequest request1 = new SocketRequest();
+        request1.setUrl(ProtocolConstants.USER_DELETE_URL);
+        request1.setHeader(header);
+
+        return List.of(request1);
     }
 }

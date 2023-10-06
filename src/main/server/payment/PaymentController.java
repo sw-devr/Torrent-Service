@@ -26,7 +26,7 @@ public class PaymentController {
             validateSession(sessionId);
 
             RequestPurchaseFileDto requestParam = objectMapper.readValue((String) request.getBody(), RequestPurchaseFileDto.class);
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
 
             if(requestParam.getUserId() != userId) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -54,7 +54,7 @@ public class PaymentController {
             validateSession(sessionId);
 
             RequestPurchaseAuthorityDto requestParam = objectMapper.readValue((String) request.getBody(), RequestPurchaseAuthorityDto.class);
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
 
             if(requestParam.getUserId() != userId) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -82,7 +82,7 @@ public class PaymentController {
             validateSession(sessionId);
 
             RequestChargePointDto requestParam = objectMapper.readValue((String) request.getBody(), RequestChargePointDto.class);
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
 
             if(requestParam.getUserId() != userId) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -110,7 +110,7 @@ public class PaymentController {
             validateSession(sessionId);
 
             RequestRefundDto requestParam = objectMapper.readValue((String) request.getBody(), RequestRefundDto.class);
-            long userId = userService.currentUserId(sessionId);
+            long userId = userService.findUserIdBySessionId(sessionId);
 
             paymentService.refund(userId, requestParam.getDownloadFilePath());
 

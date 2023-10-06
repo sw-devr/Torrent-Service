@@ -42,7 +42,6 @@ public class SocketServerHandler implements Runnable {
 
             SocketResponse socketResponse = handleRequest(socketRequest);
 
-            System.out.println(socketResponse);
             sendResponse(socketWriter, socketResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);

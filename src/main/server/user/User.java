@@ -112,7 +112,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "UserDto{" +
+        return "User{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +

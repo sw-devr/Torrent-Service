@@ -49,7 +49,6 @@ public class UserService {
 
     public void join(RequestJoinDto request) {
 
-        System.out.println(request);
         if(userRepository.findByEmail(request.getEmail()) != null) {
             throw new IllegalArgumentException("이미 존재하는 email입니다.");
         }
@@ -58,20 +57,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void remove(String sessionId) {
 
-        long userId = session.remove(sessionId);
-
-        fileService.deleteFromUser(userId);
-        userRepository.delete(userId);
-    }
-
-    public Long currentUserId(String sessionId) {
+    public Long findUserIdBySessionId(String sessionId) {
 
         return session.get(sessionId);
     }
 
-    public ResponseUserDto find(String sessionId) {
+    public ResponseUserDto findUserBySessionId(String sessionId) {
 
         long userId = session.get(sessionId);
         User user =  userRepository.findById(userId);
@@ -85,8 +77,11 @@ public class UserService {
         return response;
     }
 
-    public User findById(long userId) {
+    public void remove(String sessionId) {
 
-        return userRepository.findById(userId);
+        long userId = session.remove(sessionId);
+
+        fileService.deleteFromUser(userId);
+        userRepository.delete(userId);
     }
 }
