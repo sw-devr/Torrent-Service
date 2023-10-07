@@ -267,4 +267,16 @@ public class UserTestCase {
 
         return List.of(request1);
     }
+
+    public static User getTestUser() {
+
+        User user = new User();
+        user.setId(500L);
+        user.setEmail("test@naver.com");
+        user.setPassword("testPassword");
+        user.setRole(UserRole.GENERAL);
+        user.setPoints(2000);
+
+        return user;
+    }
 }

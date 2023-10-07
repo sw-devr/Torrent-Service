@@ -36,6 +36,9 @@ public class UserService {
 
     public void logout(String sessionId) {
 
+        if(!isLogin(sessionId)) {
+            throw new IllegalArgumentException("로그인 되어 있지 않은 사용자 입니다.");
+        }
         session.remove(sessionId);
     }
 
@@ -65,9 +68,15 @@ public class UserService {
 
     public ResponseUserDto findUserBySessionId(String sessionId) {
 
-        long userId = session.get(sessionId);
-        User user =  userRepository.findById(userId);
-
+        Long userId = session.get(sessionId);
+        if(userId == null) {
+            throw new IllegalArgumentException("현재 세션이 존재하지 않습니다.");
+        }
+        User user = userRepository.findById(userId);
+        if(user == null) {
+            session.remove(sessionId);
+            throw new IllegalStateException("현재 세션에 해당하는 유저 정보가 존재하지 않습니다.");
+        }
         ResponseUserDto response = new ResponseUserDto();
         response.setUserId(user.getId());
         response.setEmail(user.getEmail());
@@ -79,9 +88,15 @@ public class UserService {
 
     public void remove(String sessionId) {
 
-        long userId = session.remove(sessionId);
+        Long userId = session.remove(sessionId);
 
+        if(userId == null) {
+            throw new IllegalArgumentException("요청한 세션이 존재하지 않습니다.");
+        }
         fileService.deleteFromUser(userId);
-        userRepository.delete(userId);
+        if(!userRepository.delete(userId)) {
+            session.remove(sessionId);
+            throw new IllegalStateException("현재 세션에 해당하는 유저 정보가 존재하지 않습니다.");
+        }
     }
 }
