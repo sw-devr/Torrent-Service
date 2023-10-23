@@ -12,6 +12,7 @@ public class FileMetadata {
     private String description;
     private int size;
     private long createdTimestamp;
+    private long lastUpdatedTimestamp;
     private int downloadCnt;
     private FileState state;
 
@@ -33,6 +34,7 @@ public class FileMetadata {
         fileMetadata.setSize(fileSize);
         fileMetadata.setState(FileState.READY);
         fileMetadata.setCreatedTimestamp(System.currentTimeMillis());
+        fileMetadata.setLastUpdatedTimestamp(System.currentTimeMillis());
         fileMetadata.setDownloadCnt(0);
 
         return fileMetadata;
@@ -50,6 +52,7 @@ public class FileMetadata {
         if(price != null) {
             this.price = price;
         }
+        lastUpdatedTimestamp = System.currentTimeMillis();
     }
 
     public int increaseDownloadCnt() {
@@ -131,6 +134,14 @@ public class FileMetadata {
         this.createdTimestamp = createdTimestamp;
     }
 
+    public long getLastUpdatedTimestamp() {
+        return lastUpdatedTimestamp;
+    }
+
+    public void setLastUpdatedTimestamp(long lastUpdatedTimestamp) {
+        this.lastUpdatedTimestamp = lastUpdatedTimestamp;
+    }
+
     public int getDownloadCnt() {
         return downloadCnt;
     }
@@ -152,13 +163,13 @@ public class FileMetadata {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof FileMetadata)) return false;
-        FileMetadata fileMetadata = (FileMetadata) o;
-        return getId() == fileMetadata.getId() && getUserId() == fileMetadata.getUserId() && getSize() == fileMetadata.getSize() && getCreatedTimestamp() == fileMetadata.getCreatedTimestamp() && Objects.equals(getPath(), fileMetadata.getPath());
+        FileMetadata that = (FileMetadata) o;
+        return id == that.id && userId == that.userId && price == that.price && size == that.size && createdTimestamp == that.createdTimestamp && lastUpdatedTimestamp == that.lastUpdatedTimestamp && downloadCnt == that.downloadCnt && Objects.equals(path, that.path) && Objects.equals(subject, that.subject) && Objects.equals(description, that.description) && state == that.state;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUserId(), getPath(), getSize(), getCreatedTimestamp());
+        return Objects.hash(id, userId, price, path, subject, description, size, createdTimestamp, lastUpdatedTimestamp, downloadCnt, state);
     }
 
     @Override
@@ -172,6 +183,7 @@ public class FileMetadata {
                 ", description='" + description + '\'' +
                 ", size=" + size +
                 ", createdTimestamp=" + createdTimestamp +
+                ", lastUpdatedTimestamp=" + lastUpdatedTimestamp +
                 ", downloadCnt=" + downloadCnt +
                 ", state=" + state +
                 '}';

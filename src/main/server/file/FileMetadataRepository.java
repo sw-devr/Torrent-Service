@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface FileMetadataRepository {
 
+    void save(FileMetadata fileMetadata);
+
     FileMetadata findById(long id);
 
     FileMetadata findByPath(String filePath);
@@ -13,8 +15,6 @@ public interface FileMetadataRepository {
     List<FileMetadata> findByUserId(long userId, int offset, int defaultPagingSize);
 
     List<FileMetadata> findAll(int offset, int size);
-
-    void save(FileMetadata fileMetadata);
 
     boolean update(FileMetadata fileMetadata);
 
