@@ -43,7 +43,7 @@ public class CommonConstants {
     public static final FileTransferService FILE_TRANSFER_SERVICE = new FileTransferService(FILE_METADATA_REPOSITORY, FILE_TRANSFER_REPOSITORY, FILE_DOWNLOAD_AUTHORITY_REPOSITORY);
     public static final FileMetadataService FILE_METADATA_SERVICE = new FileMetadataService(FILE_METADATA_REPOSITORY);
     public static final UserService USER_SERVICE = new UserService(USER_REPOSITORY, FILE_METADATA_SERVICE);
-    public static final PaymentService PAYMENT_SERVICE = new PaymentService(FILE_METADATA_SERVICE, USER_REPOSITORY, FILE_METADATA_REPOSITORY);
+    public static final PaymentService PAYMENT_SERVICE = new PaymentService(FILE_METADATA_SERVICE, USER_REPOSITORY, FILE_METADATA_REPOSITORY, FILE_DOWNLOAD_AUTHORITY_REPOSITORY);
 
 
     public static String createTempFilePath(String path) {

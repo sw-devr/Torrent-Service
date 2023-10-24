@@ -61,11 +61,11 @@ public class FileTransferController {
             if (!request.getHeader().get(CONTENT_TYPE.getValue()).equals(JSON.getValue())) {
                 throw new IllegalArgumentException("요청 헤더 타입이 잘못되었습니다.");
             }
-            String downloadToken = request.getHeader().get(DOWNLOAD_AUTHORITY_TOKEN.getValue());
+            String downloadAuthorityToken = request.getHeader().get(DOWNLOAD_AUTHORITY_TOKEN.getValue());
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
 
             //비지니스 로직
-            fileTransferService.download((BufferedOutputStream) request.getBody(), downloadToken);
+            fileTransferService.download((BufferedOutputStream) request.getBody(), downloadAuthorityToken);
 
             Map<String, String> header = new HashMap<>();
             header.put(CONTENT_TYPE.getValue(), JSON.getValue());
