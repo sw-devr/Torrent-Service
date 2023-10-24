@@ -5,7 +5,7 @@ import main.client.common.SocketClientHandler;
 import main.client.file.ui.FileMainFrame;
 import main.client.file.ui.ModifierFrame;
 import main.protocol.*;
-import main.server.file.RequestDeleteFileMetadataDto;
+import main.server.file.metadata.RequestFileMetadataDeleteDto;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,7 +48,7 @@ public class FileMetadataDeleteListener implements ActionListener {
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
-            RequestDeleteFileMetadataDto requestBody = new RequestDeleteFileMetadataDto();
+            RequestFileMetadataDeleteDto requestBody = new RequestFileMetadataDeleteDto();
             requestBody.setFileId(fileId);
             requestBody.setUserId(userId);
 

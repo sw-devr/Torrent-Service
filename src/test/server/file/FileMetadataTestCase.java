@@ -1,7 +1,7 @@
 package test.server.file;
 
-import main.server.file.FileMetadata;
-import main.server.file.FileState;
+import main.server.file.metadata.FileMetadata;
+import main.server.file.metadata.FileState;
 
 import java.util.ArrayList;
 import java.util.List;

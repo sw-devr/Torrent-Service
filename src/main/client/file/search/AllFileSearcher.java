@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import main.client.common.SocketClientHandler;
 import main.protocol.*;
-import main.server.file.FileMetadata;
-import main.server.file.RequestSearchAllDto;
+import main.server.file.metadata.FileMetadata;
+import main.server.file.metadata.RequestFileMetadataSearchAllDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class AllFileSearcher implements FileSearcher {
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
-            RequestSearchAllDto requestBody = new RequestSearchAllDto();
+            RequestFileMetadataSearchAllDto requestBody = new RequestFileMetadataSearchAllDto();
             requestBody.setOffset(offset);
             requestBody.setSize(DEFAULT_PAGING_SIZE);
 

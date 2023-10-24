@@ -2,7 +2,7 @@ package main.client.file.ui;
 
 import main.client.payment.PaymentFileListener;
 import main.client.user.handler.UserHandler;
-import main.server.file.FileMetadata;
+import main.server.file.metadata.FileMetadata;
 import main.server.user.ResponseUserDto;
 
 import javax.swing.*;

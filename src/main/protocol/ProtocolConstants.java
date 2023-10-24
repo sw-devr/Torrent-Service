@@ -10,7 +10,7 @@ public class ProtocolConstants {
     public static final String FILE_UPLOAD_URL = "/file/upload";
     public static final String FILE_DOWNLOAD_URL = "/file/download";
     public static final String FILE_METADATA_CREATE_URL = "/file/metadata/create";
-    public static final String FILE_METADATA_FIND_ALL_URL = "/file/metadata/search/all";
+    public static final String FILE_METADATA_FIND_ALL_URL = "/file/metadata/search";
     public static final String FILE_METADATA_FIND_FROM_USER_URL = "/file/metadata/search/user";
     public static final String FILE_METADATA_FIND_FROM_SUBJECT_URL = "/file/metadata/search/subject";
     public static final String FILE_METADATA_UPDATE_URL = "/file/metadata/update";

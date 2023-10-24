@@ -1,4 +1,4 @@
-package main.server.file;
+package main.server.file.transfer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import main.protocol.ContentType;
@@ -21,7 +21,7 @@ import static main.protocol.SocketResponse.STATUS_CODE_BYTE_SIZE;
 import static main.server.common.CommonConstants.DEFAULT_BUFFER_SIZE;
 import static main.server.file.FileConstants.*;
 
-public class StreamFileRepository implements FileRepository {
+public class StreamFileTransferRepository implements FileTransferRepository {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

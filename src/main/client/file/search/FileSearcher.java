@@ -1,6 +1,6 @@
 package main.client.file.search;
 
-import main.server.file.FileMetadata;
+import main.server.file.metadata.FileMetadata;
 
 import java.util.List;
 

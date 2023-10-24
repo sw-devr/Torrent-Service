@@ -1,9 +1,9 @@
 package test.server.file;
 
-import main.server.file.CSVFileMetadataRepository;
-import main.server.file.FileMetadata;
-import main.server.file.FileMetadataRepository;
-import main.server.file.FileState;
+import main.server.file.metadata.CSVFileMetadataRepository;
+import main.server.file.metadata.FileMetadata;
+import main.server.file.metadata.FileMetadataRepository;
+import main.server.file.metadata.FileState;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

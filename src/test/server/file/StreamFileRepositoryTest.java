@@ -1,6 +1,6 @@
 package test.server.file;
 
-import main.server.file.StreamFileRepository;
+import main.server.file.transfer.StreamFileTransferRepository;
 import main.server.security.CipherWorker;
 
 import java.io.*;
@@ -14,7 +14,7 @@ import static main.server.file.FileConstants.*;
 
 public class StreamFileRepositoryTest {
 
-    private static final StreamFileRepository streamFileRepository = new StreamFileRepository();
+    private static final StreamFileTransferRepository streamFileRepository = new StreamFileTransferRepository();
 
     public static void main(String[] args) throws IOException {
 

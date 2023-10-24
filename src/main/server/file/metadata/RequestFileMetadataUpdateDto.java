@@ -1,6 +1,6 @@
-package main.server.file;
+package main.server.file.metadata;
 
-public class RequestUpdateFileMetadataDto {
+public class RequestFileMetadataUpdateDto {
 
     private long userId;
     private long requiredFileId;

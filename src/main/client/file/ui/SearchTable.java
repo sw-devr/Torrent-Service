@@ -1,6 +1,6 @@
 package main.client.file.ui;
 
-import main.server.file.FileMetadata;
+import main.server.file.metadata.FileMetadata;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

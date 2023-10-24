@@ -1,9 +1,9 @@
-package main.server.file;
+package main.server.file.transfer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
-public interface FileRepository {
+public interface FileTransferRepository {
 
     void send(BufferedOutputStream socketWriter, String filePath);
 

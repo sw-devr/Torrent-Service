@@ -6,7 +6,7 @@ import main.client.file.handler.FileUploadHandler;
 import main.client.file.ui.FileMainFrame;
 import main.client.user.handler.UserHandler;
 import main.protocol.*;
-import main.server.file.RequestCreateFileMetadataDto;
+import main.server.file.metadata.RequestFileMetadataCreateDto;
 import main.server.user.ResponseUserDto;
 
 import javax.swing.*;
@@ -59,7 +59,7 @@ public class FileMetadataCreateListener implements ActionListener {
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
-            RequestCreateFileMetadataDto requestBody = new RequestCreateFileMetadataDto();
+            RequestFileMetadataCreateDto requestBody = new RequestFileMetadataCreateDto();
             requestBody.setUserId(user.getUserId());
             requestBody.setSubject(subjectTextField.getText());
             requestBody.setDescription(descriptionTextField.getText());

@@ -1,6 +1,6 @@
 package main.server.user;
 
-import main.server.file.FileService;
+import main.server.file.metadata.FileMetadataService;
 
 import java.util.Map;
 import java.util.UUID;
@@ -10,11 +10,11 @@ public class UserService {
 
     private final Map<String /*sessionId */, Long /* userId */> session = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
-    private final FileService fileService;
+    private final FileMetadataService fileMetadataService;
 
-    public UserService(UserRepository userRepository, FileService fileService) {
+    public UserService(UserRepository userRepository, FileMetadataService fileMetadataService) {
         this.userRepository = userRepository;
-        this.fileService = fileService;
+        this.fileMetadataService = fileMetadataService;
     }
 
 
@@ -93,7 +93,7 @@ public class UserService {
         if(userId == null) {
             throw new IllegalArgumentException("요청한 세션이 존재하지 않습니다.");
         }
-        fileService.deleteFromUser(userId);
+        fileMetadataService.deleteAllFromUser(userId);
         if(!userRepository.delete(userId)) {
             session.remove(sessionId);
             throw new IllegalStateException("현재 세션에 해당하는 유저 정보가 존재하지 않습니다.");

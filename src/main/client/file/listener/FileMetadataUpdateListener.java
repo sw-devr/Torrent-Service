@@ -5,7 +5,7 @@ import main.client.common.SocketClientHandler;
 import main.client.file.ui.FileMainFrame;
 import main.client.file.ui.ModifierFrame;
 import main.protocol.*;
-import main.server.file.RequestUpdateFileMetadataDto;
+import main.server.file.metadata.RequestFileMetadataUpdateDto;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -49,7 +49,7 @@ public class FileMetadataUpdateListener implements ActionListener {
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
-            RequestUpdateFileMetadataDto requestBody = new RequestUpdateFileMetadataDto();
+            RequestFileMetadataUpdateDto requestBody = new RequestFileMetadataUpdateDto();
             requestBody.setRequiredFileId(fileId);
             requestBody.setUserId(userId);
             requestBody.setPrice(Integer.parseInt(priceTextField.getText()));

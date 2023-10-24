@@ -1,6 +1,7 @@
 package test.server.user;
 
-import main.server.file.FileService;
+import main.server.file.metadata.FileMetadataService;
+import main.server.file.transfer.FileTransferService;
 import main.server.user.*;
 
 public class UserServiceTest {
@@ -48,8 +49,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -76,8 +77,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return null;}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -105,8 +106,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -134,8 +135,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -168,8 +169,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         String sessionId = "invalidSessionId";
 
@@ -198,8 +199,8 @@ public class UserServiceTest {
             @Override
             public void save(User user) {}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestJoinDto request = new RequestJoinDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -229,8 +230,8 @@ public class UserServiceTest {
             @Override
             public void save(User user) {}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestJoinDto request = new RequestJoinDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -258,8 +259,8 @@ public class UserServiceTest {
             @Override
             public User findByEmail(String email) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -285,8 +286,8 @@ public class UserServiceTest {
 
         //given
         UserRepository mockUserRepository = new CSVUserRepository("", "") {};
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         String sessionId = "invalidSessionId";
 
@@ -314,8 +315,8 @@ public class UserServiceTest {
             @Override
             public User findById(long id) {return UserTestCase.getTestUser();}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -344,8 +345,8 @@ public class UserServiceTest {
 
         //given
         UserRepository mockUserRepository = new CSVUserRepository("", "") {};
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         String sessionId = "invalidSessionId";
 
@@ -374,8 +375,8 @@ public class UserServiceTest {
             @Override
             public User findById(long id) {return null;}
         };
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -412,11 +413,11 @@ public class UserServiceTest {
             @Override
             public boolean delete(long id) {return true;}
         };
-        FileService mockFileService = new FileService(null, null, null){
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null){
             @Override
-            public void deleteFromUser(long userId) {}
+            public void deleteAllFromUser(long userId) {}
         };
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());
@@ -442,8 +443,8 @@ public class UserServiceTest {
 
         //given
         UserRepository mockUserRepository = new CSVUserRepository("", "") {};
-        FileService mockFileService = new FileService(null, null, null);
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        FileMetadataService mockFileMetadataService = new FileMetadataService(null);
+        UserService userService = new UserService(mockUserRepository, mockFileMetadataService);
 
         String sessionId = "invalidSessionId";
 
@@ -472,11 +473,11 @@ public class UserServiceTest {
             @Override
             public boolean delete(long id) {return false;}
         };
-        FileService mockFileService = new FileService(null, null, null){
+        FileMetadataService mockFileTransferService = new FileMetadataService(null){
             @Override
-            public void deleteFromUser(long userId) {}
+            public void deleteAllFromUser(long userId) {}
         };
-        UserService userService = new UserService(mockUserRepository, mockFileService);
+        UserService userService = new UserService(mockUserRepository, mockFileTransferService);
 
         RequestLoginDto request = new RequestLoginDto();
         request.setEmail(UserTestCase.getTestUser().getEmail());

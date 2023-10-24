@@ -1,6 +1,6 @@
-package main.server.file;
+package main.server.file.metadata;
 
-public class RequestDeleteFileMetadataDto {
+public class RequestFileMetadataDeleteDto {
 
     private long userId;
     private long fileId;

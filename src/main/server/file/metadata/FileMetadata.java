@@ -1,4 +1,4 @@
-package main.server.file;
+package main.server.file.metadata;
 
 import java.util.Objects;
 
