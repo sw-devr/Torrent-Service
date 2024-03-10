@@ -59,14 +59,14 @@ public class PaymentFileListener implements ActionListener {
             //후처리
             if(response.getStatusCode() == Status.SUCCESS.getCode()) {
                 ResponsePurchaseFileDto responseBody = objectMapper.readValue((String)response.getBody(), ResponsePurchaseFileDto.class);
-                String downloadPath = responseBody.getDownloadFilePath();
-                String userPath = createUserPath(downloadPath);
+                String downloadFileAuthorityToken = responseBody.getDownloadFileAuthorityToken();
+                String serverDownloadFilePath = responseBody.getDownloadFilePath();
+                String clientDownloadPath = createUserPath(serverDownloadFilePath);
 
-                // downloadFrame 으로 이동
-                FileDownloadHandler fileDownloadHandler = new FileDownloadHandler(sessionId, downloadPath, userPath);
+                FileDownloadHandler fileDownloadHandler = new FileDownloadHandler(sessionId, downloadFileAuthorityToken, clientDownloadPath);
                 fileDownloadHandler.getDownload();
             } else {
-                //로그인 시도 실패 메세지 콘솔 띄우기
+                // 결제 실패시 에러 메세지 알림
                 JOptionPane.showMessageDialog(null, response.getBody());
             }
         } catch (IOException ex) {

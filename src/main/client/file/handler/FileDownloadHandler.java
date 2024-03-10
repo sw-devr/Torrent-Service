@@ -24,13 +24,13 @@ public class FileDownloadHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String sessionId;
-    private final String downloadPath;
-    private final String currentPath;
+    private final String downloadAuthorityToken;
+    private final String clientDownloadPath;
 
-    public FileDownloadHandler(String sessionId, String downloadPath, String currentPath) {
+    public FileDownloadHandler(String sessionId, String downloadAuthorityToken, String clientDownloadPath) {
         this.sessionId = sessionId;
-        this.downloadPath = downloadPath;
-        this.currentPath = currentPath;
+        this.downloadAuthorityToken = downloadAuthorityToken;
+        this.clientDownloadPath = clientDownloadPath;
     }
 
     public void getDownload() {
@@ -41,7 +41,7 @@ public class FileDownloadHandler {
             //전처리
             Map<String, String> header = new HashMap<>();
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
-            header.put(SocketHeaderType.DOWNLOAD_PATH_URL.getValue(), downloadPath);
+            header.put(SocketHeaderType.DOWNLOAD_AUTHORITY_TOKEN.getValue(), downloadAuthorityToken);
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
             SocketRequest request = new SocketRequest();
@@ -78,7 +78,7 @@ public class FileDownloadHandler {
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
             RequestRefundDto requestBody = new RequestRefundDto();
-            requestBody.setDownloadFilePath(downloadPath);
+            requestBody.setDownloadFilePath(downloadAuthorityToken);
 
             SocketRequest request = new SocketRequest();
             request.setUrl(REFUND_FILE_URL);
@@ -104,7 +104,7 @@ public class FileDownloadHandler {
             BufferedInputStream socketReader = (BufferedInputStream)response.getBody();
             int bodySize = response.getBodySize();
 
-            downloadFile(socketReader, bodySize, currentPath);
+            downloadFile(socketReader, bodySize, clientDownloadPath);
             SocketResponse rs = socketHandler.receiveResponse();
 
             System.out.println(rs);
@@ -114,13 +114,13 @@ public class FileDownloadHandler {
         }
     }
 
-    private void downloadFile(BufferedInputStream socketReader, int bodySize, String currentPath) {
+    private void downloadFile(BufferedInputStream socketReader, int bodySize, String clientDownloadPath) {
 
         FileTransferProgressBarFrame fileTransferProgressBarFrame = new FileTransferProgressBarFrame(bodySize);
         fileTransferProgressBarFrame.setVisible(true);
 
         int totalSize = 0;
-        try(BufferedOutputStream fileWriter = new BufferedOutputStream(new FileOutputStream(currentPath))) {
+        try(BufferedOutputStream fileWriter = new BufferedOutputStream(new FileOutputStream(clientDownloadPath))) {
             while(true) {
                 byte[] decryptedBuffer = new byte[DEFAULT_BUFFER_SIZE];
                 byte[] encryptedBuffer = CipherWorker.encrypt(decryptedBuffer);

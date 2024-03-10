@@ -1,8 +1,10 @@
-package main.server.file;
+package main.server.file.metadata;
 
 import java.util.List;
 
 public interface FileMetadataRepository {
+
+    void save(FileMetadata fileMetadata);
 
     FileMetadata findById(long id);
 
@@ -13,8 +15,6 @@ public interface FileMetadataRepository {
     List<FileMetadata> findByUserId(long userId, int offset, int defaultPagingSize);
 
     List<FileMetadata> findAll(int offset, int size);
-
-    void save(FileMetadata fileMetadata);
 
     boolean update(FileMetadata fileMetadata);
 

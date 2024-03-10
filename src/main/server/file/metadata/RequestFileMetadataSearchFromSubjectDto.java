@@ -1,6 +1,6 @@
-package main.server.file;
+package main.server.file.metadata;
 
-public class RequestSearchFromSubjectDto {
+public class RequestFileMetadataSearchFromSubjectDto {
 
     private String subject;
     private int offset;

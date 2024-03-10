@@ -1,4 +1,4 @@
-package main.server.file;
+package main.server.file.metadata;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,86 +8,20 @@ import main.protocol.SocketResponse;
 import main.protocol.Status;
 import main.server.user.UserService;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static main.protocol.ContentType.JSON;
-import static main.protocol.ContentType.STREAM;
 import static main.protocol.ProtocolConstants.*;
+import static main.protocol.ProtocolConstants.FILE_METADATA_DELETE_URL;
 import static main.protocol.ResponseFactory.createResponse;
-import static main.protocol.SocketHeaderType.*;
-import static main.server.common.CommonConstants.FILE_SERVICE;
-import static main.server.common.CommonConstants.USER_SERVICE;
+import static main.protocol.SocketHeaderType.SESSION_ID;
+import static main.protocol.SocketHeaderType.UPLOAD_PATH_URL;
+import static main.server.common.CommonConstants.*;
 
-public class FileController {
+public class FileMetadataController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final FileService fileService = FILE_SERVICE;
+    private final FileMetadataService fileService = FILE_METADATA_SERVICE;
     private final UserService userService = USER_SERVICE;
-
-    @Mapping(FILE_UPLOAD_URL)
-    public SocketResponse upload(SocketRequest request) {
-
-        if(!request.getHeader().get(CONTENT_TYPE.getValue()).equals(STREAM.getValue())) {
-            throw new IllegalArgumentException("요청 헤더 타입이 잘못되었습니다.");
-        }
-        String path = request.getHeader().get(UPLOAD_PATH_URL.getValue());
-        String sessionId = request.getHeader().get(SESSION_ID.getValue());
-
-        //비지니스 로직
-        boolean isSuccess = fileService.upload((BufferedInputStream) request.getBody(), path);
-
-        HashMap<String, String> header = new HashMap<>();
-        header.put(CONTENT_TYPE.getValue(), JSON.getValue());
-        header.put(SESSION_ID.getValue(), sessionId);
-
-        if(isSuccess) {
-            return createResponse(Status.SUCCESS.getCode(), header, "성공적으로 업로드 파일은 받았습니다.");
-        }
-        return createResponse(Status.INTERNAL_SERVER_ERROR.getCode(), header, "파일 업로드 중 실패했습니다.");
-    }
-
-    @Mapping(FILE_DOWNLOAD_URL)
-    public SocketResponse download(SocketRequest request) {
-
-
-        try {
-            if (!request.getHeader().get(CONTENT_TYPE.getValue()).equals(JSON.getValue())) {
-                throw new IllegalArgumentException("요청 헤더 타입이 잘못되었습니다.");
-            }
-            String path = request.getHeader().get(DOWNLOAD_PATH_URL.getValue());
-            String sessionId = request.getHeader().get(SESSION_ID.getValue());
-            long userId = userService.findUserIdBySessionId(sessionId);
-
-            //비지니스 로직
-            fileService.download((BufferedOutputStream) request.getBody(), path, userId);
-
-            Map<String, String> header = new HashMap<>();
-            header.put(CONTENT_TYPE.getValue(), JSON.getValue());
-            header.put(SESSION_ID.getValue(), sessionId);
-
-            return createResponse(Status.SUCCESS.getCode(), header, "성공적으로 다운로드 파일은 전송했습니다.");
-        }
-        catch (IllegalStateException e) {
-
-            Map<String, String> header = new HashMap<>();
-            header.put(CONTENT_TYPE.getValue(), JSON.getValue());
-            header.put(SESSION_ID.getValue(), request.getHeader().get(SESSION_ID.getValue()));
-
-            return createResponse(Status.SUCCESS.getCode(), header, "파일 다운로드 중 실패했습니다.");
-        }
-        catch (IllegalArgumentException e) {
-
-            Map<String, String> header = new HashMap<>();
-            header.put(CONTENT_TYPE.getValue(), JSON.getValue());
-            header.put(SESSION_ID.getValue(), request.getHeader().get(SESSION_ID.getValue()));
-
-            return createResponse(Status.SUCCESS.getCode(), header, e.getMessage());
-        }
-    }
 
     @Mapping(FILE_METADATA_CREATE_URL)
     public SocketResponse createFileMetadata(SocketRequest request) {
@@ -96,7 +30,7 @@ public class FileController {
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
             validateSession(sessionId);
 
-            RequestCreateFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestCreateFileMetadataDto.class);
+            RequestFileMetadataCreateDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataCreateDto.class);
             if(requestParam.getUserId() != userService.findUserIdBySessionId(sessionId)) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
@@ -123,7 +57,7 @@ public class FileController {
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
             validateSession(sessionId);
 
-            RequestSearchAllDto requestParam = objectMapper.readValue((String)request.getBody(), RequestSearchAllDto.class);
+            RequestFileMetadataSearchAllDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataSearchAllDto.class);
             List<FileMetadata> list = fileService.findAll(requestParam.getOffset() , requestParam.getSize());
             String body = objectMapper.writeValueAsString(list);
 
@@ -141,7 +75,7 @@ public class FileController {
         try{
             String sessionId = request.getHeader().get(SESSION_ID.getValue());
             validateSession(sessionId);
-            RequestSearchFromUserDto requestParam = objectMapper.readValue((String)request.getBody(), RequestSearchFromUserDto.class);
+            RequestFileMetadataSearchFromUserDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataSearchFromUserDto.class);
 
             if(requestParam.getUserId() != userService.findUserIdBySessionId(sessionId)) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -169,7 +103,7 @@ public class FileController {
         try{
             validateSession(request.getHeader().get(SESSION_ID.getValue()));
 
-            RequestSearchFromSubjectDto requestParam = objectMapper.readValue((String)request.getBody(), RequestSearchFromSubjectDto.class);
+            RequestFileMetadataSearchFromSubjectDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataSearchFromSubjectDto.class);
 
             List<FileMetadata> list = fileService.findBySubject(requestParam.getSubject(), requestParam.getOffset());
             String body = objectMapper.writeValueAsString(list);
@@ -190,7 +124,7 @@ public class FileController {
             validateSession(sessionId);
 
             long userId = userService.findUserIdBySessionId(sessionId);
-            RequestUpdateFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestUpdateFileMetadataDto.class);
+            RequestFileMetadataUpdateDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataUpdateDto.class);
             if(userId != requestParam.getUserId()) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
@@ -218,7 +152,7 @@ public class FileController {
             validateSession(sessionId);
 
             long userId = userService.findUserIdBySessionId(sessionId);
-            RequestDeleteFileMetadataDto requestParam = objectMapper.readValue((String)request.getBody(), RequestDeleteFileMetadataDto.class);
+            RequestFileMetadataDeleteDto requestParam = objectMapper.readValue((String)request.getBody(), RequestFileMetadataDeleteDto.class);
             if(userId != requestParam.getUserId()) {
                 throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
             }
@@ -237,7 +171,6 @@ public class FileController {
             return createResponse(Status.INTERNAL_SERVER_ERROR.getCode(), request.getHeader(), e.getMessage());
         }
     }
-
 
 
     private void validateSession(String sessionId) {

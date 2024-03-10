@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import main.client.common.SocketClientHandler;
 import main.protocol.*;
-import main.server.file.FileMetadata;
-import main.server.file.RequestSearchFromSubjectDto;
+import main.server.file.metadata.FileMetadata;
+import main.server.file.metadata.RequestFileMetadataSearchFromSubjectDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class SubjectFileSearcher implements FileSearcher {
             header.put(SocketHeaderType.CONTENT_TYPE.getValue(), ContentType.JSON.getValue());
             header.put(SocketHeaderType.SESSION_ID.getValue(), sessionId);
 
-            RequestSearchFromSubjectDto requestBody = new RequestSearchFromSubjectDto();
+            RequestFileMetadataSearchFromSubjectDto requestBody = new RequestFileMetadataSearchFromSubjectDto();
             requestBody.setOffset(offset);
             requestBody.setSubject(subject);
 

@@ -1,6 +1,6 @@
-package main.server.file;
+package main.server.file.metadata;
 
-public class RequestCreateFileMetadataDto {
+public class RequestFileMetadataCreateDto {
 
     private long userId;
     private String subject;

@@ -1,6 +1,6 @@
-package main.server.file;
+package main.server.file.metadata;
 
-public class RequestSearchAllDto {
+public class RequestFileMetadataSearchAllDto {
 
     private int offset;
     private int size;

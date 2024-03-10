@@ -1,7 +1,7 @@
 package main.client.file.ui;
 
 import main.client.file.search.FileSearcher;
-import main.server.file.FileMetadata;
+import main.server.file.metadata.FileMetadata;
 
 import javax.swing.*;
 import java.awt.*;
